@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
 
 const loader = new GLTFLoader();
 
@@ -14,6 +15,8 @@ function modelLoader(url) {
 
   async function main() {
 
+	const clock = new THREE.Clock();
+
     const canvas = document.querySelector( '#c' );
 	const renderer = new THREE.WebGLRenderer( { antialias: true, canvas } );
 	renderer.shadowMap.enabled = true;
@@ -24,13 +27,18 @@ function modelLoader(url) {
 	const far = 100;
 	const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
 	camera.position.set( 4,2,-1);
+	camera.lookAt(-2,0,0)
     
-
-
+	
+	const controls = new FirstPersonControls( camera, renderer.domElement );
+	controls.movementSpeed = 150;
+	controls.lookSpeed = 0.5;
+/*
 	const controls = new OrbitControls( camera, canvas );
 	controls.target.set( -2, 0, 0 );
+	controls.enableDamping = true;
 	controls.update();
-
+*/
 	const scene = new THREE.Scene();
 	scene.background = new THREE.Color( '#DEFEFF' );
 
@@ -38,9 +46,12 @@ function modelLoader(url) {
 
     
     const model = gltfData.scene;
+
     gltfData.scene.children[3].intensity =50
-    scene.add(model);
-console.log(gltfData)
+    
+	scene.add(model);
+	
+	console.log(gltfData)
 
 
 function resizeRendererToDisplaySize( renderer ) {
@@ -60,31 +71,16 @@ function resizeRendererToDisplaySize( renderer ) {
 }
 
 
-// Create an AnimationMixer, and get the list of AnimationClip instances
-const mixer = new THREE.AnimationMixer( gltfData );
-const clips = gltfData.animations;
 
-// Update the mixer on each frame
-function update () {
-	mixer.update( deltaSeconds );
-}
+const mixer = new THREE.AnimationMixer( gltfData.scene );
 
-// Play a specific animation
-const clip = THREE.AnimationClip.findByName( clips, 'rotacion_cabeza' );
-const action = mixer.clipAction( clip );
-action.play();
-console.log(action)
-// Play all animations
-/*
-clips.forEach( function ( clip ) {
-	mixer.clipAction( clip ).play();
-} );
-*/
+mixer.clipAction( gltfData.animations[ 1 ] ).play();
+
 	function render( time ) {
 
-		time *= 0.001;
+		time *= 0.00001;
 
-        
+        const delta = clock.getDelta();
 		if ( resizeRendererToDisplaySize( renderer ) ) {
 
 			const canvas = renderer.domElement;
@@ -93,9 +89,11 @@ clips.forEach( function ( clip ) {
 
 		}
 
-     mixer.update(time)
+     
 		renderer.render( scene, camera );
-        controls.update();
+       // controls.update();
+	   controls.update( clock.getDelta() );
+		mixer.update(delta)
 		requestAnimationFrame( render );
 
 	}
