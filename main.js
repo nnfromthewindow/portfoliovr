@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Octree } from 'three/addons/math/Octree.js';
 import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
 import { Capsule } from 'three/addons/math/Capsule.js';
+import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
 const loader = new GLTFLoader();
 
@@ -248,19 +249,33 @@ container.addEventListener( 'mousedown', () => {
 			
 			const model = gltfData.scene;
 
-			model.children[3].intensity =50
-			model.children[4].intensity =50
-			model.children[5].intensity =50
-			model.children[6].intensity =50
-			model.children[9].intensity =50
-			model.children[10].intensity =50
-			model.children[11].intensity =50
-			model.children[12].intensity =50
-			model.children[13].intensity =50
-			
+			model.children[3].intensity =20
+			model.children[4].intensity =20
+			model.children[5].intensity =20
+			model.children[6].intensity =20
+			model.children[9].intensity =20
+			model.children[10].intensity =20
+			model.children[11].intensity =20
+			model.children[12].intensity =20
+			model.children[13].children[0].intensity =20
+			model.children[13].children[1].intensity =20
+			model.children[13].children[2].intensity =20
+			model.children[13].children[3].intensity =20
+			model.children[13].children[4].intensity =20
+			model.children[13].children[5].intensity =20
+			model.children[13].children[6].intensity =20
+			model.children[13].children[7].intensity =20
+			model.children[13].children[8].intensity =20
+			model.children[13].children[9].intensity =20
+			model.children[13].children[10].intensity =20
+			model.children[13].children[11].intensity =20
+			model.children[13].children[12].intensity =20
+			model.children[13].children[13].intensity =20
+			model.children[13].children[14].intensity =20
+	
 			scene.add(model);
 			
-			console.log(gltfData)
+			console.log(gltfData.scene.children)
 
 			
 
