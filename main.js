@@ -248,7 +248,7 @@ container.addEventListener( 'mousedown', () => {
 
 			
 			const model = gltfData.scene;
-/*
+
 			model.children[3].intensity =20
 			model.children[4].intensity =20
 			model.children[5].intensity =20
@@ -272,7 +272,15 @@ container.addEventListener( 'mousedown', () => {
 			model.children[13].children[12].intensity =20
 			model.children[13].children[13].intensity =20
 			model.children[13].children[14].intensity =20
-*/	
+			model.children[33].intensity =20
+			model.children[34].intensity =20
+			model.children[35].intensity =20
+			model.children[36].intensity =20
+			model.children[37].intensity =20
+			model.children[38].intensity =20
+			model.children[39].intensity =20
+
+	
 			scene.add(model);
 			
 			console.log(gltfData.scene.children)
