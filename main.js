@@ -251,34 +251,38 @@ container.addEventListener( 'mousedown', () => {
 
 			model.children[3].intensity =20
 			model.children[4].intensity =20
-			model.children[5].intensity =20
-			model.children[6].intensity =20
+			model.children[7].intensity =20
+			model.children[8].intensity =20
 			model.children[9].intensity =20
 			model.children[10].intensity =20
-			model.children[11].intensity =20
-			model.children[12].intensity =20
-			model.children[13].children[0].intensity =20
-			model.children[13].children[1].intensity =20
-			model.children[13].children[2].intensity =20
-			model.children[13].children[3].intensity =20
-			model.children[13].children[4].intensity =20
-			model.children[13].children[5].intensity =20
-			model.children[13].children[6].intensity =20
-			model.children[13].children[7].intensity =20
-			model.children[13].children[8].intensity =20
-			model.children[13].children[9].intensity =20
-			model.children[13].children[10].intensity =20
-			model.children[13].children[11].intensity =20
-			model.children[13].children[12].intensity =20
-			model.children[13].children[13].intensity =20
-			model.children[13].children[14].intensity =20
+	
+			model.children[11].children[0].intensity =20
+			model.children[11].children[1].intensity =20
+			model.children[11].children[2].intensity =20
+			model.children[11].children[3].intensity =20
+			model.children[11].children[4].intensity =20
+			model.children[11].children[5].intensity =20
+			model.children[11].children[6].intensity =20
+			model.children[11].children[7].intensity =20
+			model.children[11].children[8].intensity =20
+			model.children[11].children[9].intensity =20
+			model.children[11].children[10].intensity =20
+			model.children[11].children[11].intensity =20
+			model.children[11].children[12].intensity =20
+			model.children[11].children[13].intensity =20
+			model.children[11].children[14].intensity =20
+
+			model.children[31].intensity =20
+			model.children[32].intensity =20
 			model.children[33].intensity =20
 			model.children[34].intensity =20
-			model.children[35].intensity =20
-			model.children[36].intensity =20
-			model.children[37].intensity =20
 			model.children[38].intensity =20
-			model.children[39].intensity =20
+			model.children[64].intensity =20
+			model.children[65].intensity =20
+
+			model.children[71].intensity =20
+
+
 
 	
 			scene.add(model);
