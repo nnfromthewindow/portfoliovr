@@ -256,7 +256,7 @@ container.addEventListener( 'mousedown', () => {
 			model.children[9].intensity =20
 			model.children[10].intensity =20
 	
-			model.children[11].children[0].intensity =20
+		/*	model.children[11].children[0].intensity =20
 			model.children[11].children[1].intensity =20
 			model.children[11].children[2].intensity =20
 			model.children[11].children[3].intensity =20
@@ -271,7 +271,7 @@ container.addEventListener( 'mousedown', () => {
 			model.children[11].children[12].intensity =20
 			model.children[11].children[13].intensity =20
 			model.children[11].children[14].intensity =20
-
+*/
 			model.children[31].intensity =20
 			model.children[32].intensity =20
 			model.children[33].intensity =20
