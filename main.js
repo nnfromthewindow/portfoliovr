@@ -4,6 +4,7 @@ import { Octree } from 'three/addons/math/Octree.js';
 import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
 import { Capsule } from 'three/addons/math/Capsule.js';
 import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
+import { TextureLoader } from 'three';
 
 const loader = new GLTFLoader();
 
@@ -17,7 +18,7 @@ const clock = new THREE.Clock();
 
 const scene = new THREE.Scene();
 //scene.background = new THREE.Color( 0x88ccee );
-scene.fog = new THREE.Fog( 0x88ccee, 0, 50 );
+//scene.fog = new THREE.Fog( 0x88ccee, 0, 50 );
 
 const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.rotation.order = 'YXZ';
@@ -248,6 +249,7 @@ container.addEventListener( 'mousedown', () => {
 
 			
 			const model = gltfData.scene;
+			console.log(model.children[3])
 
 			model.children[3].intensity =20
 			model.children[4].intensity =20
@@ -256,7 +258,7 @@ container.addEventListener( 'mousedown', () => {
 			model.children[9].intensity =20
 			model.children[10].intensity =20
 	
-		/*	model.children[11].children[0].intensity =20
+			model.children[11].children[0].intensity =20
 			model.children[11].children[1].intensity =20
 			model.children[11].children[2].intensity =20
 			model.children[11].children[3].intensity =20
@@ -271,33 +273,53 @@ container.addEventListener( 'mousedown', () => {
 			model.children[11].children[12].intensity =20
 			model.children[11].children[13].intensity =20
 			model.children[11].children[14].intensity =20
-*/
-			model.children[31].intensity =20
-			model.children[32].intensity =20
-			model.children[33].intensity =20
-			model.children[34].intensity =20
+
+			model.children[31].intensity =10
+			model.children[32].intensity =10
+			model.children[33].intensity =10
+			model.children[34].intensity =10
+
 			model.children[38].intensity =20
 	
-			model.children[67].intensity =20
+			model.children[69].intensity =20
 			model.children[68].intensity =20
 			
 			
-			model.children[70].intensity =20
-			model.children[72].intensity =20
-			model.children[74].intensity =20
-			model.children[79].intensity =20
-			model.children[80].intensity =2
-			model.children[81].intensity =20
+			model.children[71].intensity =20
+			model.children[73].intensity =20
+			model.children[75].intensity =20
+		
+			model.children[80].intensity =20
+			model.children[81].intensity =2
+			model.children[82].intensity =20
 
+			model.children[91].intensity =20
+			model.children[92].intensity =2
+			model.children[93].intensity =20
 
+			model.children[102].intensity =1000
+			model.children[103].intensity =1000
+			model.children[106].intensity =200
 
+			//const imageLoader = new THREE.TextureLoader();
+			const texture = new THREE.TextureLoader().load('assets/frente.jpg');
+			
+			//imageLoader.load('assets/interior.jpg');
+			//console.log(texture)
+			
+			const cinemaScreen = model.children[101]
+			//cinemaScreen.material.color.isColor=false
+			//cinemaScreen.material.map = texture
+			//cinemaScreen.material.map.needsUpdate = true;
+			console.log(cinemaScreen)
 
+			
 	
 			scene.add(model);
 			
 			console.log(gltfData.scene.children)
-
-			
+			console.log(model.children[104])
+			//console.log(scene.children[0].children)
 
 			worldOctree.fromGraphNode(model);
 
@@ -312,6 +334,15 @@ container.addEventListener( 'mousedown', () => {
 
 						//child.material.map.anisotropy = 4;
 
+					}
+					if (child.name == "cinema_screen" ) {
+						texture.wrapS = THREE.RepeatWrapping;
+						texture.wrapT = THREE.RepeatWrapping;
+						texture.rotation = Math.PI/2
+				
+						let tempMaterial = new THREE.MeshStandardMaterial({ map: texture, });
+						child.material = tempMaterial;
+					
 					}
 
 				}
@@ -348,7 +379,101 @@ container.addEventListener( 'mousedown', () => {
 			mixer.clipAction( gltfData.animations[ 1 ] ).play();
 
 
+//PICK FUNCTION
+class PickHelper {
+	constructor() {
+	  this.raycaster = new THREE.Raycaster();
+	  this.pickedObject = null;
+	  this.pickedObjectSavedColor = 0;
+	}
+	pick(normalizedPosition, scene, camera, time) {
+	  // restore the color if there is a picked object
+	  if (this.pickedObject) {
+		this.pickedObject.material.emissive.setHex(this.pickedObjectSavedColor);
+		this.pickedObject = undefined;
+	  }
+	 
+	  // cast a ray through the frustum
+	  this.raycaster.setFromCamera(normalizedPosition, camera);
+	  // get the list of objects the ray intersected
+	  const intersectedObjects = this.raycaster.intersectObjects(model.children);
+	  if (intersectedObjects.length) {
+		
+		// pick the first object. It's the closest one
+		this.pickedObject = intersectedObjects[0].object;
+		// save its color
+		this.pickedObjectSavedColor = this.pickedObject.material.emissive.getHex();
+		// set its emissive color to flashing red/yellow
+		//this.pickedObject.material.emissive.setHex((time * 8) % 2 > 1 ? 0xFFFF00 : 0xFF0000);
+		if(this.pickedObject.name == "next_btn"){
+			this.pickedObject.material.emissive.setHex(0x00FF00)
+		}
+	  }
+	}
+  }
+
+  const pickPosition = {x: 0, y: 0};
+  clearPickPosition();
+
+  function getCanvasRelativePosition(event) {
+	const rect = container.getBoundingClientRect();
+	return {
+	  x: (event.clientX - rect.left) * window.innerWidth   / rect.width,
+	  y: (event.clientY - rect.top ) * window.innerHeight  / rect.height,
+	};
+  }
+   
+  function setPickPosition(event) {
+	const pos = getCanvasRelativePosition(event);
+	pickPosition.x = (pos.x / window.innerWidth ) *  2 - 1;
+	pickPosition.y = (pos.y / window.innerHeight ) * -2 + 1;  // note we flip Y
+  }
+   
+  function clearPickPosition() {
+	// unlike the mouse which always has a position
+	// if the user stops touching the screen we want
+	// to stop picking. For now we just pick a value
+	// unlikely to pick something
+	pickPosition.x = -100000;
+	pickPosition.y = -100000;
+  }
+   
+  window.addEventListener('mousemove', setPickPosition);
+  window.addEventListener('mouseout', clearPickPosition);
+  window.addEventListener('mouseleave', clearPickPosition);
+
+  window.addEventListener('touchstart', (event) => {
+	// prevent the window from scrolling
+	event.preventDefault();
+	setPickPosition(event.touches[0]);
+  }, {passive: false});
+   
+  window.addEventListener('touchmove', (event) => {
+	setPickPosition(event.touches[0]);
+  });
+   
+  window.addEventListener('touchend', clearPickPosition);
+
+  const pickHelper = new PickHelper();
+
+const nextImage = () =>{
+	if(pickHelper.pickedObject.name == "next_btn"){
+		console.log("NEXT IMAGE")
+	}
+}
+
+
+
+
+
+
+
+  window.addEventListener('click', nextImage)
+//-------------------------------------------------
+
 			function animate() {
+
+				
 
 				const deltaTime = Math.min( 0.05, clock.getDelta() ) / STEPS_PER_FRAME;
 
@@ -367,9 +492,16 @@ container.addEventListener( 'mousedown', () => {
 				}
 
 				mixer.update(deltaTime)
+				pickHelper.pick(pickPosition, scene, camera, deltaTime);
+				//console.log(pickHelper.pickedObject.name)
+				/*
+				if(pickHelper.pickedObject.name == "Button1"){
+					console.log("NEXT IMAGE")
+				}
+				*/
 
 				renderer.render( scene, camera );
-
+				
 
 				requestAnimationFrame( animate );
 
