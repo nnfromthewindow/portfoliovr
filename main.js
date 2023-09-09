@@ -249,81 +249,44 @@ container.addEventListener( 'mousedown', () => {
 
 			
 			const model = gltfData.scene;
-			console.log(model.children[3])
 
-			model.children[3].intensity =20
-			model.children[4].intensity =20
-			model.children[7].intensity =20
-			model.children[8].intensity =20
-			model.children[9].intensity =20
-			model.children[10].intensity =20
+			const loadManager = new THREE.LoadingManager();
+			const imageLoader = new THREE.TextureLoader(loadManager);
+			//const texture = new THREE.TextureLoader().load('assets/frente.jpg');
+			
+
+			const materials = [
+				new THREE.MeshBasicMaterial({map: imageLoader.load('assets/frente.jpg')}),
+				new THREE.MeshBasicMaterial({map: imageLoader.load('assets/interior.jpg')}),
+				new THREE.MeshBasicMaterial({map: imageLoader.load('assets/barra.jpg')}),
+						
+			]
+
+			const nextImage = () =>{
+			const image = materials.indexOf(model.children[101].material) 
+			}
 	
-			model.children[11].children[0].intensity =20
-			model.children[11].children[1].intensity =20
-			model.children[11].children[2].intensity =20
-			model.children[11].children[3].intensity =20
-			model.children[11].children[4].intensity =20
-			model.children[11].children[5].intensity =20
-			model.children[11].children[6].intensity =20	
-			model.children[11].children[7].intensity =20
-			model.children[11].children[8].intensity =20
-			model.children[11].children[9].intensity =20
-			model.children[11].children[10].intensity =20
-			model.children[11].children[11].intensity =20
-			model.children[11].children[12].intensity =20
-			model.children[11].children[13].intensity =20
-			model.children[11].children[14].intensity =20
-
-			model.children[31].intensity =10
-			model.children[32].intensity =10
-			model.children[33].intensity =10
-			model.children[34].intensity =10
-
-			model.children[38].intensity =20
-	
-			model.children[69].intensity =20
-			model.children[68].intensity =20
+			loadManager.onLoad = () => {
+				model.children[101].material.map = materials[0].map
+				model.children[101].material.map.wrapS = THREE.RepeatWrapping;
+				model.children[101].material.map.wrapT = THREE.RepeatWrapping;
+				model.children[101].material.map.rotation = Math.PI/2
+				
+			  };
+			  
+			  console.log(materials[0])
 			
-			
-			model.children[71].intensity =20
-			model.children[73].intensity =20
-			model.children[75].intensity =20
-		
-			model.children[80].intensity =20
-			model.children[81].intensity =2
-			model.children[82].intensity =20
-
-			model.children[91].intensity =20
-			model.children[92].intensity =2
-			model.children[93].intensity =20
-
-			model.children[102].intensity =1000
-			model.children[103].intensity =1000
-			model.children[106].intensity =200
-
-			//const imageLoader = new THREE.TextureLoader();
-			const texture = new THREE.TextureLoader().load('assets/frente.jpg');
-			
-			//imageLoader.load('assets/interior.jpg');
-			//console.log(texture)
-			
-			const cinemaScreen = model.children[101]
-			//cinemaScreen.material.color.isColor=false
-			//cinemaScreen.material.map = texture
-			//cinemaScreen.material.map.needsUpdate = true;
-			console.log(cinemaScreen)
-
-			
-	
 			scene.add(model);
-			
+			 
 			console.log(gltfData.scene.children)
-			console.log(model.children[104])
-			//console.log(scene.children[0].children)
-
+			
 			worldOctree.fromGraphNode(model);
 
 			model.traverse( child => {
+
+				if(child.isLight){
+				child.intensity =30
+				}
 
 				if ( child.isMesh ) {
 
@@ -335,26 +298,28 @@ container.addEventListener( 'mousedown', () => {
 						//child.material.map.anisotropy = 4;
 
 					}
-					if (child.name == "cinema_screen" ) {
-						texture.wrapS = THREE.RepeatWrapping;
-						texture.wrapT = THREE.RepeatWrapping;
-						texture.rotation = Math.PI/2
-				
-						let tempMaterial = new THREE.MeshStandardMaterial({ map: texture, });
-						child.material = tempMaterial;
-					
-					}
-
 				}
 
 			} );
 
+		
+			//LIGHTS
+
+			model.children[31].intensity =10
+			model.children[32].intensity =10
+			model.children[33].intensity =10
+			model.children[34].intensity =10
+			model.children[81].intensity =2
+			model.children[92].intensity =2
+			model.children[102].intensity =1000
+			model.children[103].intensity =1000
+			model.children[106].intensity =200
+
+			
+			
 			const helper = new OctreeHelper( worldOctree );
 			helper.visible = false;
 			scene.add( helper );
-
-			
-				
 
 
 			function teleportPlayerIfOob() {
@@ -456,10 +421,24 @@ class PickHelper {
 
   const pickHelper = new PickHelper();
 
-const nextImage = () =>{
+const clickFunction = () =>{
 	if(pickHelper.pickedObject.name == "next_btn"){
 		console.log("NEXT IMAGE")
-	}
+		const id = model.children[101].material.map.uuid
+		const array = materials.map((img)=>img.map.uuid)
+		const index = array.indexOf(id)
+		
+		model.children[101].material.map = materials[index+1].map
+		model.children[101].material.map.wrapS = THREE.RepeatWrapping;
+		model.children[101].material.map.wrapT = THREE.RepeatWrapping;
+		model.children[101].material.map.rotation = Math.PI/2
+		/*
+		model.children[101].material.map = materials[1].map
+		model.children[101].material.map.wrapS = THREE.RepeatWrapping;
+				model.children[101].material.map.wrapT = THREE.RepeatWrapping;
+				model.children[101].material.map.rotation = Math.PI/2
+	*/
+			}
 }
 
 
@@ -468,7 +447,7 @@ const nextImage = () =>{
 
 
 
-  window.addEventListener('click', nextImage)
+  window.addEventListener('click', clickFunction)
 //-------------------------------------------------
 
 			function animate() {
