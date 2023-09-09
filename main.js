@@ -422,37 +422,32 @@ class PickHelper {
   const pickHelper = new PickHelper();
 
 const clickFunction = () =>{
+	//CINEMA SCREEN NEXT IMAGE BUTTON FUNCTION
 	if(pickHelper.pickedObject.name == "next_btn"){
-		console.log("NEXT IMAGE")
 		const id = model.children[101].material.map.uuid
 		const array = materials.map((img)=>img.map.uuid)
 		const index = array.indexOf(id)
-		
-		model.children[101].material.map = materials[index+1].map
-		model.children[101].material.map.wrapS = THREE.RepeatWrapping;
-		model.children[101].material.map.wrapT = THREE.RepeatWrapping;
-		model.children[101].material.map.rotation = Math.PI/2
-		/*
-		model.children[101].material.map = materials[1].map
-		model.children[101].material.map.wrapS = THREE.RepeatWrapping;
-				model.children[101].material.map.wrapT = THREE.RepeatWrapping;
-				model.children[101].material.map.rotation = Math.PI/2
-	*/
+		if(index<array.length-1){
+			model.children[101].material.map = materials[index+1].map
+			model.children[101].material.map.wrapS = THREE.RepeatWrapping;
+			model.children[101].material.map.wrapT = THREE.RepeatWrapping;
+			model.children[101].material.map.rotation = Math.PI/2
+		}else{
+			model.children[101].material.map = materials[0].map
+			model.children[101].material.map.wrapS = THREE.RepeatWrapping;
+			model.children[101].material.map.wrapT = THREE.RepeatWrapping;
+			model.children[101].material.map.rotation = Math.PI/2
+		}
+
 			}
 }
 
-
-
-
-
-
-
   window.addEventListener('click', clickFunction)
-//-------------------------------------------------
+
+
+	//-----------------ANIMATE FUNCTION--------------------------------
 
 			function animate() {
-
-				
 
 				const deltaTime = Math.min( 0.05, clock.getDelta() ) / STEPS_PER_FRAME;
 
@@ -472,15 +467,8 @@ const clickFunction = () =>{
 
 				mixer.update(deltaTime)
 				pickHelper.pick(pickPosition, scene, camera, deltaTime);
-				//console.log(pickHelper.pickedObject.name)
-				/*
-				if(pickHelper.pickedObject.name == "Button1"){
-					console.log("NEXT IMAGE")
-				}
-				*/
 
 				renderer.render( scene, camera );
-				
 
 				requestAnimationFrame( animate );
 
