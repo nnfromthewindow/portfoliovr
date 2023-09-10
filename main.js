@@ -262,10 +262,7 @@ container.addEventListener( 'mousedown', () => {
 						
 			]
 
-			const nextImage = () =>{
-			const image = materials.indexOf(model.children[101].material) 
-			}
-	
+		
 			loadManager.onLoad = () => {
 				model.children[101].material.map = materials[0].map
 				model.children[101].material.map.wrapS = THREE.RepeatWrapping;
@@ -315,6 +312,7 @@ container.addEventListener( 'mousedown', () => {
 			model.children[103].intensity =1000
 			model.children[106].intensity =200
 
+			model.children[109].visible = false
 			
 			
 			const helper = new OctreeHelper( worldOctree );
