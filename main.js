@@ -311,6 +311,7 @@ container.addEventListener( 'mousedown', () => {
 			model.children[102].intensity =1000
 			model.children[103].intensity =1000
 			model.children[106].intensity =200
+			model.children[110].intensity =1000
 
 			model.children[109].visible = false
 			
