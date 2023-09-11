@@ -339,8 +339,9 @@ container.addEventListener( 'mousedown', () => {
 
 
 			const mixer = new THREE.AnimationMixer( gltfData.scene );
-
+console.log(gltfData.animations)
 			mixer.clipAction( gltfData.animations[ 1 ] ).play();
+			mixer.clipAction( gltfData.animations[ 2 ] ).play();
 
 
 //PICK FUNCTION
