@@ -263,13 +263,7 @@ container.addEventListener( 'mousedown', () => {
 			]
 
 		
-			loadManager.onLoad = () => {
-				model.children[101].material.map = materials[0].map
-				model.children[101].material.map.wrapS = THREE.RepeatWrapping;
-				model.children[101].material.map.wrapT = THREE.RepeatWrapping;
-				model.children[101].material.map.rotation = Math.PI/2
-				
-			  };
+			
 			  
 			  console.log(materials[0])
 			
@@ -283,6 +277,18 @@ container.addEventListener( 'mousedown', () => {
 
 				if(child.isLight){
 				child.intensity =30
+				}
+				if(child.name == "cinema_screen"){
+					loadManager.onLoad = () => {
+						child.material.map = materials[0].map
+						child.material.map.wrapS = THREE.RepeatWrapping;
+						child.material.map.wrapT = THREE.RepeatWrapping;
+						child.material.map.rotation = Math.PI/2
+						
+					  };
+				}
+				if(child.name == "boundary"){
+					child.visible = false
 				}
 
 				if ( child.isMesh ) {
@@ -306,14 +312,21 @@ container.addEventListener( 'mousedown', () => {
 			model.children[32].intensity =10
 			model.children[33].intensity =10
 			model.children[34].intensity =10
+			model.children[79].intensity =2
+			model.children[90].intensity =2
 			model.children[81].intensity =2
 			model.children[92].intensity =2
+			model.children[101].intensity =1000
 			model.children[102].intensity =1000
-			model.children[103].intensity =1000
 			model.children[106].intensity =200
-			model.children[110].intensity =1000
-
-			model.children[109].visible = false
+			model.children[109].intensity =1000
+/*
+			const color = 0xFFFFFF;
+			const intensity = 0.3;
+			const light = new THREE.AmbientLight(color, intensity);
+			scene.add(light);
+*/
+			
 			
 			
 			const helper = new OctreeHelper( worldOctree );
@@ -424,19 +437,19 @@ class PickHelper {
 const clickFunction = () =>{
 	//CINEMA SCREEN NEXT IMAGE BUTTON FUNCTION
 	if(pickHelper.pickedObject.name == "next_btn"){
-		const id = model.children[101].material.map.uuid
+		const id = model.children[100].material.map.uuid
 		const array = materials.map((img)=>img.map.uuid)
 		const index = array.indexOf(id)
 		if(index<array.length-1){
-			model.children[101].material.map = materials[index+1].map
-			model.children[101].material.map.wrapS = THREE.RepeatWrapping;
-			model.children[101].material.map.wrapT = THREE.RepeatWrapping;
-			model.children[101].material.map.rotation = Math.PI/2
+			model.children[100].material.map = materials[index+1].map
+			model.children[100].material.map.wrapS = THREE.RepeatWrapping;
+			model.children[100].material.map.wrapT = THREE.RepeatWrapping;
+			model.children[100].material.map.rotation = Math.PI/2
 		}else{
-			model.children[101].material.map = materials[0].map
-			model.children[101].material.map.wrapS = THREE.RepeatWrapping;
-			model.children[101].material.map.wrapT = THREE.RepeatWrapping;
-			model.children[101].material.map.rotation = Math.PI/2
+			model.children[100].material.map = materials[0].map
+			model.children[100].material.map.wrapS = THREE.RepeatWrapping;
+			model.children[100].material.map.wrapT = THREE.RepeatWrapping;
+			model.children[100].material.map.rotation = Math.PI/2
 		}
 
 			}
