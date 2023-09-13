@@ -276,7 +276,8 @@ container.addEventListener( 'mousedown', () => {
 			model.traverse( child => {
 
 				if(child.isLight){
-				child.intensity =30
+				child.intensity =150
+
 				}
 				if(child.name == "cinema_screen"){
 					loadManager.onLoad = () => {
@@ -307,7 +308,7 @@ container.addEventListener( 'mousedown', () => {
 
 		
 			//LIGHTS
-
+/*
 			model.children[31].intensity =10
 			model.children[32].intensity =10
 			model.children[33].intensity =10
@@ -320,13 +321,13 @@ container.addEventListener( 'mousedown', () => {
 			model.children[102].intensity =1000
 			model.children[106].intensity =200
 			model.children[109].intensity =1000
+*/
 /*
 			const color = 0xFFFFFF;
-			const intensity = 0.3;
+			const intensity = 0.5;
 			const light = new THREE.AmbientLight(color, intensity);
 			scene.add(light);
 */
-			
 			
 			
 			const helper = new OctreeHelper( worldOctree );
