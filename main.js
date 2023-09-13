@@ -262,10 +262,6 @@ container.addEventListener( 'mousedown', () => {
 						
 			]
 
-		
-			
-			  
-			  console.log(materials[0])
 			
 			scene.add(model);
 			 
@@ -276,7 +272,7 @@ container.addEventListener( 'mousedown', () => {
 			model.traverse( child => {
 
 				if(child.isLight){
-				child.intensity =150
+				child.intensity =100
 
 				}
 				if(child.name == "cinema_screen"){
@@ -290,6 +286,9 @@ container.addEventListener( 'mousedown', () => {
 				}
 				if(child.name == "boundary"){
 					child.visible = false
+				}
+				if(child.name == "Point_playroom"){
+					child.intensity =1000
 				}
 
 				if ( child.isMesh ) {
@@ -438,20 +437,28 @@ class PickHelper {
 const clickFunction = () =>{
 	//CINEMA SCREEN NEXT IMAGE BUTTON FUNCTION
 	if(pickHelper.pickedObject.name == "next_btn"){
-		const id = model.children[100].material.map.uuid
-		const array = materials.map((img)=>img.map.uuid)
-		const index = array.indexOf(id)
-		if(index<array.length-1){
-			model.children[100].material.map = materials[index+1].map
-			model.children[100].material.map.wrapS = THREE.RepeatWrapping;
-			model.children[100].material.map.wrapT = THREE.RepeatWrapping;
-			model.children[100].material.map.rotation = Math.PI/2
-		}else{
-			model.children[100].material.map = materials[0].map
-			model.children[100].material.map.wrapS = THREE.RepeatWrapping;
-			model.children[100].material.map.wrapT = THREE.RepeatWrapping;
-			model.children[100].material.map.rotation = Math.PI/2
-		}
+
+		model.traverse((child)=>{
+			if(child.name == "cinema_screen"){
+				
+				const id = child.material.map.uuid
+				const array = materials.map((img)=>img.map.uuid)
+				const index = array.indexOf(id)
+
+				if(index<array.length-1){
+					child.material.map = materials[index+1].map
+					child.material.map.wrapS = THREE.RepeatWrapping;
+					child.material.map.wrapT = THREE.RepeatWrapping;
+					child.material.map.rotation = Math.PI/2
+				}else{
+					child.material.map = materials[0].map
+					child.material.map.wrapS = THREE.RepeatWrapping;
+					child.material.map.wrapT = THREE.RepeatWrapping;
+					child.material.map.rotation = Math.PI/2
+				}
+			} 	
+		})
+
 
 			}
 }
