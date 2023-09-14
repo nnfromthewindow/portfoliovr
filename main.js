@@ -22,6 +22,8 @@ const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.rotation.order = 'YXZ';
+camera.rotation.set( 0, -80.11, 0 );
+
 
 
 
@@ -43,10 +45,13 @@ const STEPS_PER_FRAME = 5;
 
 const worldOctree = new Octree();
 
-const playerCollider = new Capsule( new THREE.Vector3( 0, 0.35, 0 ), new THREE.Vector3( 0, 1.8, 0 ), 0.35 );
+const playerCollider = new Capsule( new THREE.Vector3( 5, 0.35, 0 ), new THREE.Vector3( 5, 1.8, 0 ), 0.35 );
 
 const playerVelocity = new THREE.Vector3();
 const playerDirection = new THREE.Vector3();
+
+console.log(playerDirection)
+console.log(playerCollider)
 
 let playerOnFloor = false;
 let mouseTime = 0;
