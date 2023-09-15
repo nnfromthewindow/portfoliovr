@@ -45,7 +45,7 @@ const STEPS_PER_FRAME = 5;
 
 const worldOctree = new Octree();
 
-const playerCollider = new Capsule( new THREE.Vector3( 5, 0.35, 0 ), new THREE.Vector3( 5, 1.8, 0 ), 0.35 );
+const playerCollider = new Capsule( new THREE.Vector3( 3, 0.35, 0 ), new THREE.Vector3( 3, 1.8, 0 ), 0.35 );
 
 const playerVelocity = new THREE.Vector3();
 const playerDirection = new THREE.Vector3();
