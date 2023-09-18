@@ -280,6 +280,9 @@ container.addEventListener( 'mousedown', () => {
 				child.intensity =100
 
 				}
+				if(child.name == "Point_home"){
+					child.intensity =200
+				}
 				if(child.name == "cinema_screen"){
 					loadManager.onLoad = () => {
 						child.material.map = materials[0].map
