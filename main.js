@@ -298,6 +298,18 @@ container.addEventListener( 'mousedown', () => {
 				if(child.name == "Point_playroom"){
 					child.intensity =1000
 				}
+				if(child.name == "Point_playroom2"){
+					child.intensity =100
+				}
+				if(child.name == "Point_playroom3"){
+					child.intensity =500
+				}
+				if(child.name == "Point_stack2"){
+					child.intensity =10
+				}
+				if(child.name == "Point_cinema2"){
+					child.intensity =10
+				}
 
 				if ( child.isMesh ) {
 
