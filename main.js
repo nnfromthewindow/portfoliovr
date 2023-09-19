@@ -407,10 +407,10 @@ class PickHelper {
 			this.pickedObject.material.emissive.setHex(0x00FF00)
 		}
 
-		if(this.pickedObject.name == "linkedin_icon"){
+		if(this.pickedObject.name == "linkedin_logo"){
 			console.log("LINKEDIN LOGO")
 			console.log(this.pickedObject)
-			this.pickedObject.scale(1.1,1.1)
+			//this.pickedObject.scale.set()
 		}
 
 	  }
@@ -488,9 +488,26 @@ const clickFunction = () =>{
 
 
 			}
+	if(pickHelper.pickedObject.name == "github_icon"){
+		console.log("CLICK GITHUB")
+		console.log(pickHelper.pickedObject)
+		//let selectionIndicatorMesh = pickHelper.pickedObject.clone();
+		let box = new THREE.Box3().setFromObject( pickHelper.pickedObject );
+		//let offset = box.getCenter();
+		const boxHelper = new THREE.Box3Helper( box, 0xffff00 );
+		scene.add( boxHelper );
+		let c = box.getCenter( new THREE.Vector3( ) );
+		console.log("BOX:")
+		console.log(box)
+		console.log("CENTER:")
+		console.log(c)
+		pickHelper.pickedObject.scale.set(1.2,1.2,1.2)
+
+	}
 }
 
   window.addEventListener('click', clickFunction)
+  
 
 
 	//-----------------ANIMATE FUNCTION--------------------------------
