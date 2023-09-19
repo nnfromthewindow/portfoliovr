@@ -302,7 +302,7 @@ container.addEventListener( 'mousedown', () => {
 					child.intensity =100
 				}
 				if(child.name == "Point_playroom3"){
-					child.intensity =500
+					child.intensity =1000
 				}
 				if(child.name == "Point_stack2"){
 					child.intensity =10
@@ -406,6 +406,13 @@ class PickHelper {
 		if(this.pickedObject.name == "next_btn"){
 			this.pickedObject.material.emissive.setHex(0x00FF00)
 		}
+
+		if(this.pickedObject.name == "linkedin_icon"){
+			console.log("LINKEDIN LOGO")
+			console.log(this.pickedObject)
+			this.pickedObject.scale(1.1,1.1)
+		}
+
 	  }
 	}
   }
