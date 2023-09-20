@@ -62,6 +62,7 @@ const vector1 = new THREE.Vector3();
 const vector2 = new THREE.Vector3();
 const vector3 = new THREE.Vector3();
 
+
 document.addEventListener( 'keydown', ( event ) => {
 
 	keyStates[ event.code ] = true;
@@ -75,13 +76,13 @@ document.addEventListener( 'keyup', ( event ) => {
 
 } );
 
-container.addEventListener( 'mousedown', () => {
-
+container.addEventListener( 'mousedown', (e) => {
+	console.log(document.pointerLockElement)
 
 		document.body.requestPointerLock();
 
 		mouseTime = performance.now();		
-
+		console.log(document.pointerLockElement)
 } );
 
 
@@ -312,42 +313,24 @@ container.addEventListener( 'mousedown', () => {
 				}
 
 				if ( child.isMesh ) {
-
 					child.castShadow = true;
 					child.receiveShadow = true;
+				}
 
-					if ( child.material.map ) {
+				if(child.name == "linkedin_box"){
+					child.visible = false
+				}
 
-						//child.material.map.anisotropy = 4;
+				if(child.name == "github_box"){
+					child.visible = false
+				}
 
-					}
+				if(child.name == "mail_box"){
+					child.visible = false
 				}
 
 			} );
 
-		
-			//LIGHTS
-/*
-			model.children[31].intensity =10
-			model.children[32].intensity =10
-			model.children[33].intensity =10
-			model.children[34].intensity =10
-			model.children[79].intensity =2
-			model.children[90].intensity =2
-			model.children[81].intensity =2
-			model.children[92].intensity =2
-			model.children[101].intensity =1000
-			model.children[102].intensity =1000
-			model.children[106].intensity =200
-			model.children[109].intensity =1000
-*/
-/*
-			const color = 0xFFFFFF;
-			const intensity = 0.5;
-			const light = new THREE.AmbientLight(color, intensity);
-			scene.add(light);
-*/
-			
 			
 			const helper = new OctreeHelper( worldOctree );
 			helper.visible = false;
@@ -372,7 +355,7 @@ container.addEventListener( 'mousedown', () => {
 
 
 			const mixer = new THREE.AnimationMixer( gltfData.scene );
-console.log(gltfData.animations)
+
 			mixer.clipAction( gltfData.animations[ 1 ] ).play();
 			mixer.clipAction( gltfData.animations[ 2 ] ).play();
 
@@ -383,6 +366,7 @@ class PickHelper {
 	  this.raycaster = new THREE.Raycaster();
 	  this.pickedObject = null;
 	  this.pickedObjectSavedColor = 0;
+	
 	}
 	pick(normalizedPosition, scene, camera, time) {
 	  // restore the color if there is a picked object
@@ -407,9 +391,12 @@ class PickHelper {
 			this.pickedObject.material.emissive.setHex(0x00FF00)
 		}
 
-
-		if(this.pickedObject.name == "linkedin_logo"){
-			this.pickedObject.parent.scale.lerp(new THREE.Vector3(1.2,1.2,1.2),0.5)
+		if(this.pickedObject.name == "linkedin_box"){
+			model.traverse((child)=>{
+				if(child.name == "linkedin_logo"){
+				child.parent.scale.lerp(new THREE.Vector3(1.2,1.2,1.2),0.3)
+				} 	
+			})
 		}else{
 			model.traverse((child)=>{
 				if(child.name == "linkedin_logo"){
@@ -419,8 +406,12 @@ class PickHelper {
 	
 		} 
 
-		if(this.pickedObject.name == "github_icon"){
-			this.pickedObject.scale.lerp(new THREE.Vector3(1.2,1.2,1.2),0.5)
+		if(this.pickedObject.name == "github_box"){
+			model.traverse((child)=>{
+				if(child.name == "github_icon"){
+				child.scale.lerp(new THREE.Vector3(1.2,1.2,1.2),0.3)
+				} 	
+			})
 		}else{
 			model.traverse((child)=>{
 				if(child.name == "github_icon"){
@@ -430,8 +421,12 @@ class PickHelper {
 	
 		} 
 
-		if(this.pickedObject.name == "mail_icon"){
-			this.pickedObject.scale.lerp(new THREE.Vector3(1.2,1.2,1.2),0.5)
+		if(this.pickedObject.name == "mail_box"){
+			model.traverse((child)=>{
+				if(child.name == "mail_icon"){
+				child.scale.lerp(new THREE.Vector3(1.2,1.2,1.2),0.3)
+				} 	
+			})
 		}else{
 			model.traverse((child)=>{
 				if(child.name == "mail_icon"){
@@ -446,7 +441,7 @@ class PickHelper {
 
   const pickPosition = {x: 0, y: 0};
   clearPickPosition();
-
+/*
   function getCanvasRelativePosition(event) {
 	const rect = container.getBoundingClientRect();
 	return {
@@ -454,11 +449,16 @@ class PickHelper {
 	  y: (event.clientY - rect.top ) * window.innerHeight  / rect.height,
 	};
   }
-   
+  */ 
   function setPickPosition(event) {
-	const pos = getCanvasRelativePosition(event);
-	pickPosition.x = (pos.x / window.innerWidth ) *  2 - 1;
-	pickPosition.y = (pos.y / window.innerHeight ) * -2 + 1;  // note we flip Y
+	//const pos = getCanvasRelativePosition(event);
+	const rect = container.getBoundingClientRect();
+	//console.log(pos)
+	//pickPosition.x = (pos.x / window.innerWidth ) *  2 - 1;
+	//pickPosition.y = (pos.y / window.innerHeight ) * -2 + 1;  // note we flip Y
+	pickPosition.x = (rect.left/2 ) //*  2 - 1;
+	pickPosition.y = (rect.top/2 ) //* -2 + 1;  // note we flip Y
+	//console.log(pickPosition)
   }
    
   function clearPickPosition() {
@@ -515,14 +515,23 @@ const clickFunction = () =>{
 
 
 			}
-	if(pickHelper.pickedObject.name == "linkedin_logo"){
+	if(pickHelper.pickedObject.name == "linkedin_box"){
+		console.log(document.pointerLockElement)
+		if ( document.pointerLockElement !== null ){
 	window.open('https://www.linkedin.com/in/nnuccelli/','_blank')
+}
 	}
-	if(pickHelper.pickedObject.name == "github_icon"){
+	if(pickHelper.pickedObject.name == "github_box"){
+		console.log(document.pointerLockElement)
+		if ( document.pointerLockElement !== null ){
 		window.open('https://github.com/nnfromthewindow','_blank')
+	}
 		}
-	if(pickHelper.pickedObject.name == "mail_icon"){
+	if(pickHelper.pickedObject.name == "mail_box"){
+		console.log(document.pointerLockElement)
+		if ( document.pointerLockElement !== null ){
 	window.open('mailto:nuccelli@hotmail.com','_blank')
+	}
 	}	
 }
 
