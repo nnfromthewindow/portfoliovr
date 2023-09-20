@@ -407,12 +407,39 @@ class PickHelper {
 			this.pickedObject.material.emissive.setHex(0x00FF00)
 		}
 
-		if(this.pickedObject.name == "linkedin_logo"){
-			console.log("LINKEDIN LOGO")
-			console.log(this.pickedObject)
-			//this.pickedObject.scale.set()
-		}
 
+		if(this.pickedObject.name == "linkedin_logo"){
+			this.pickedObject.parent.scale.lerp(new THREE.Vector3(1.2,1.2,1.2),0.5)
+		}else{
+			model.traverse((child)=>{
+				if(child.name == "linkedin_logo"){
+				child.parent.scale.set(1,1,1)
+				} 	
+			})
+	
+		} 
+
+		if(this.pickedObject.name == "github_icon"){
+			this.pickedObject.scale.lerp(new THREE.Vector3(1.2,1.2,1.2),0.5)
+		}else{
+			model.traverse((child)=>{
+				if(child.name == "github_icon"){
+				child.scale.set(1,1,1)
+				} 	
+			})
+	
+		} 
+
+		if(this.pickedObject.name == "mail_icon"){
+			this.pickedObject.scale.lerp(new THREE.Vector3(1.2,1.2,1.2),0.5)
+		}else{
+			model.traverse((child)=>{
+				if(child.name == "mail_icon"){
+				child.scale.set(1,1,1)
+				} 	
+			})
+	
+		} 
 	  }
 	}
   }
@@ -488,22 +515,15 @@ const clickFunction = () =>{
 
 
 			}
-	if(pickHelper.pickedObject.name == "github_icon"){
-		console.log("CLICK GITHUB")
-		console.log(pickHelper.pickedObject)
-		//let selectionIndicatorMesh = pickHelper.pickedObject.clone();
-		let box = new THREE.Box3().setFromObject( pickHelper.pickedObject );
-		//let offset = box.getCenter();
-		const boxHelper = new THREE.Box3Helper( box, 0xffff00 );
-		scene.add( boxHelper );
-		let c = box.getCenter( new THREE.Vector3( ) );
-		console.log("BOX:")
-		console.log(box)
-		console.log("CENTER:")
-		console.log(c)
-		pickHelper.pickedObject.scale.set(1.2,1.2,1.2)
-
+	if(pickHelper.pickedObject.name == "linkedin_logo"){
+	window.open('https://www.linkedin.com/in/nnuccelli/','_blank')
 	}
+	if(pickHelper.pickedObject.name == "github_icon"){
+		window.open('https://github.com/nnfromthewindow','_blank')
+		}
+	if(pickHelper.pickedObject.name == "mail_icon"){
+	window.open('mailto:nuccelli@hotmail.com','_blank')
+	}	
 }
 
   window.addEventListener('click', clickFunction)
