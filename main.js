@@ -28,6 +28,23 @@ camera.rotation.set( 0, -80.11, 0 );
 
 
 const container = document.getElementById( 'container' );
+const menu = document.getElementById( 'init-screen' );
+const pointerlock = document.getElementById( 'pointerlock' );
+
+pointerlock.addEventListener('click', ()=>{
+	flag=false
+	
+		document.body.requestPointerLock();
+
+		mouseTime = performance.now();		
+		pointerlock.style.display='none'
+	setTimeout(()=>{
+	flag =true
+	menu.style.display='none'
+	
+	},1000)
+})
+
 
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
@@ -74,17 +91,20 @@ document.addEventListener( 'keyup', ( event ) => {
 
 
 } );
-
+/*
 container.addEventListener( 'mousedown', (e) => {
 	flag=false
+	
 		document.body.requestPointerLock();
 
 		mouseTime = performance.now();		
+	
 	setTimeout(()=>{
 	flag =true
+	menu.style.display='none'
 	},1000)
 } );
-
+*/
 
 
 
@@ -440,7 +460,7 @@ class PickHelper {
   }
 
   const pickPosition = {x: 0, y: 0};
-  clearPickPosition();
+  //clearPickPosition();
 /*
   function getCanvasRelativePosition(event) {
 	const rect = container.getBoundingClientRect();
@@ -467,14 +487,21 @@ class PickHelper {
 	// to stop picking. For now we just pick a value
 	// unlikely to pick something
 	flag=false
+	menu.style.display='flex'
 	pickPosition.x = -100000;
 	pickPosition.y = -100000;
   }
    
   window.addEventListener('mousemove', setPickPosition);
-  window.addEventListener('mouseout', clearPickPosition);
+ window.addEventListener('mouseout', clearPickPosition);
   window.addEventListener('mouseleave', clearPickPosition);
-
+  ////////////////////////////
+  container.addEventListener('mousemove',()=>{
+	
+		pointerlock.style.display='block'
+	  
+  })
+//////////////////////
   window.addEventListener('touchstart', (event) => {
 	// prevent the window from scrolling
 	event.preventDefault();
