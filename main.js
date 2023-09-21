@@ -50,11 +50,10 @@ const playerCollider = new Capsule( new THREE.Vector3( 3, 0.35, 0 ), new THREE.V
 const playerVelocity = new THREE.Vector3();
 const playerDirection = new THREE.Vector3();
 
-console.log(playerDirection)
-console.log(playerCollider)
 
 let playerOnFloor = false;
 let mouseTime = 0;
+let flag = false;
 
 const keyStates = {};
 
@@ -77,12 +76,13 @@ document.addEventListener( 'keyup', ( event ) => {
 } );
 
 container.addEventListener( 'mousedown', (e) => {
-	console.log(document.pointerLockElement)
-
+	flag=false
 		document.body.requestPointerLock();
 
 		mouseTime = performance.now();		
-		console.log(document.pointerLockElement)
+	setTimeout(()=>{
+	flag =true
+	},1000)
 } );
 
 
@@ -466,6 +466,7 @@ class PickHelper {
 	// if the user stops touching the screen we want
 	// to stop picking. For now we just pick a value
 	// unlikely to pick something
+	flag=false
 	pickPosition.x = -100000;
 	pickPosition.y = -100000;
   }
@@ -488,7 +489,7 @@ class PickHelper {
 
   const pickHelper = new PickHelper();
 
-const clickFunction = () =>{
+const clickFunction = (e) =>{
 	//CINEMA SCREEN NEXT IMAGE BUTTON FUNCTION
 	if(pickHelper.pickedObject.name == "next_btn"){
 
@@ -512,26 +513,24 @@ const clickFunction = () =>{
 				}
 			} 	
 		})
-
-
 			}
+
 	if(pickHelper.pickedObject.name == "linkedin_box"){
-		console.log(document.pointerLockElement)
-		if ( document.pointerLockElement !== null ){
-	window.open('https://www.linkedin.com/in/nnuccelli/','_blank')
-}
+		if(flag){
+			window.open('https://www.linkedin.com/in/nnuccelli/','_blank')
+		}	
 	}
+	
 	if(pickHelper.pickedObject.name == "github_box"){
-		console.log(document.pointerLockElement)
-		if ( document.pointerLockElement !== null ){
-		window.open('https://github.com/nnfromthewindow','_blank')
-	}
+		if(flag){
+			window.open('https://github.com/nnfromthewindow','_blank')
 		}
-	if(pickHelper.pickedObject.name == "mail_box"){
-		console.log(document.pointerLockElement)
-		if ( document.pointerLockElement !== null ){
-	window.open('mailto:nuccelli@hotmail.com','_blank')
 	}
+
+	if(pickHelper.pickedObject.name == "mail_box"){
+		if(flag){
+			window.open('mailto:nuccelli@hotmail.com','_blank')
+		}
 	}	
 }
 
