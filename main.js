@@ -28,19 +28,22 @@ camera.rotation.set( 0, -80.11, 0 );
 
 
 const container = document.getElementById( 'container' );
-const menu = document.getElementById( 'init-screen' );
+const initScreen = document.getElementById( 'init-screen' );
 const pointerlock = document.getElementById( 'pointerlock' );
+const menu = document.getElementById( 'menu' );
+
+menu.style.display='none'
 
 pointerlock.addEventListener('click', ()=>{
 	flag=false
-	
+	flag2=true
 		document.body.requestPointerLock();
 
 		mouseTime = performance.now();		
-		pointerlock.style.display='none'
+		//pointerlock.style.display='none'
 	setTimeout(()=>{
 	flag =true
-	menu.style.display='none'
+	initScreen.style.display='none'
 	
 	},1000)
 })
@@ -71,7 +74,7 @@ const playerDirection = new THREE.Vector3();
 let playerOnFloor = false;
 let mouseTime = 0;
 let flag = false;
-
+let flag2 = false
 const keyStates = {};
 
 const vector1 = new THREE.Vector3();
@@ -101,7 +104,7 @@ container.addEventListener( 'mousedown', (e) => {
 	
 	setTimeout(()=>{
 	flag =true
-	menu.style.display='none'
+	initScreen.style.display='none'
 	},1000)
 } );
 */
@@ -487,21 +490,33 @@ class PickHelper {
 	// to stop picking. For now we just pick a value
 	// unlikely to pick something
 	flag=false
-	menu.style.display='flex'
+	flag2=false
+	initScreen.style.display='flex'
 	pickPosition.x = -100000;
 	pickPosition.y = -100000;
+	//pointerlock.style.display='block'
   }
    
-  window.addEventListener('mousemove', setPickPosition);
- window.addEventListener('mouseout', clearPickPosition);
-  window.addEventListener('mouseleave', clearPickPosition);
-  ////////////////////////////
-  container.addEventListener('mousemove',()=>{
+	window.addEventListener('mousemove', setPickPosition);
+	window.addEventListener('mouseout', clearPickPosition);
+	window.addEventListener('mouseleave', clearPickPosition);
+
+//////////POINTER LOCK ENTER/EXIT //////////////////
+
+	document.addEventListener('pointerlockchange', (e)=>{
 	
-		pointerlock.style.display='block'
-	  
-  })
+	if(flag2){
+		pointerlock.style.display='none'
+	}else if(!flag2){
+		setTimeout(()=>{
+			pointerlock.style.display='block'
+		},2000)
+		
+	}
+	flag = !flag
+})
 //////////////////////
+
   window.addEventListener('touchstart', (event) => {
 	// prevent the window from scrolling
 	event.preventDefault();
@@ -563,7 +578,9 @@ const clickFunction = (e) =>{
 
   window.addEventListener('click', clickFunction)
   
-
+	if(model){
+		menu.style.display='block'
+	}
 
 	//-----------------ANIMATE FUNCTION--------------------------------
 
