@@ -491,7 +491,10 @@ class PickHelper {
 	// unlikely to pick something
 	flag=false
 	flag2=false
-	initScreen.style.display='flex'
+	if(window.innerWidth>1024){
+		initScreen.style.display='flex'
+	}
+	
 	pickPosition.x = -100000;
 	pickPosition.y = -100000;
 	//pointerlock.style.display='block'
@@ -517,6 +520,7 @@ class PickHelper {
 })
 //////////////////////
 
+
   window.addEventListener('touchstart', (event) => {
 	// prevent the window from scrolling
 	event.preventDefault();
@@ -524,10 +528,19 @@ class PickHelper {
   }, {passive: false});
    
   window.addEventListener('touchmove', (event) => {
+	
 	setPickPosition(event.touches[0]);
   });
    
   window.addEventListener('touchend', clearPickPosition);
+
+  window.addEventListener('pointermove', (event) => {
+	if(window.innerWidth<1024){
+		camera.rotation.y -= event.movementX / 500;
+		camera.rotation.x -= event.movementY / 500;
+	  
+	}
+	});
 
   const pickHelper = new PickHelper();
 

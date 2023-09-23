@@ -8,7 +8,7 @@
 }
 
 #pointerlock{
-
+display: block;
 position: absolute;
 height: 100%;
 opacity: 0;
@@ -102,3 +102,11 @@ margin: 0 auto;
     transform: scale(2.5);
 }
 
+@media only screen and (max-width: 1024px) {
+    #init-screen {
+      display: none;
+    }
+    #pointerlock{
+        display: none;
+      }
+}
