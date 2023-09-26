@@ -102,6 +102,34 @@ margin: 0 auto;
     transform: scale(2.5);
 }
 
+/* TOUCH CONTROL */
+
+.touch-controls{
+    bottom: 0;
+    height: 20rem;
+    position: absolute;
+    width: 100%;
+    z-index: 1200;
+}
+
+#zone_joystick{
+    z-index: 2000;
+}
+
+#jump{
+    background-color: rgba(128, 255, 0, 0.466);
+    border-radius: 100%;
+    bottom: 50%;
+    height: 4.5rem;
+    right: 5%;
+    position: absolute;
+    width: 4.5rem;
+}
+
+
+
+
+
 @media only screen and (max-width: 1024px) {
     #init-screen {
       display: none;
@@ -109,4 +137,37 @@ margin: 0 auto;
     #pointerlock{
         display: none;
       }
+}
+
+/* Portrait orientation */
+@media screen and (orientation: portrait) {
+    
+
+    .nipple{
+        left: 30%;
+        top: 82%;
+        transform: scale(3);
+    }
+
+    #jump{
+        bottom: 25%;
+        right: 10%;
+        transform: scale(2);
+    }
+}
+
+/* Landscape orientation */
+@media screen and (orientation: landscape) {
+
+    .nipple{
+        left: 15%;
+        top: 69%;
+        transform: scale(1.2);
+    }
+
+    #jump{
+        bottom: 35%;
+        right: 10%;
+        transform: scale(1.1);
+    }
 }
