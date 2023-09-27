@@ -48,13 +48,13 @@ let portrait = window.matchMedia("(orientation: portrait)");
 portrait.addEventListener("change", function(e) {
     if(e.matches) {
        console.log("PORTRAIT")
-	   if(window.innerWidth<1024 || window.innerHeight<1024){
+	   if(window.mobileCheck()){
 		renderer.setPixelRatio(0.5)
 
 	}
     } else {
         console.log("LANDSCAPE")
-		if(window.innerWidth<1024 || window.innerHeight<1024){
+		if(window.mobileCheck()){
 			renderer.setPixelRatio(0.8)
 		
 		}
@@ -211,6 +211,18 @@ container.addEventListener( 'mousedown', (e) => {
 					pointerlock.style.display='none'
 					initScreen.style.display='none'
 					touchScreen.style.display='flex'
+					if(!portrait){
+				
+						console.log("port_resize:")
+						
+						//joystick.options.position = { left: '30%', top: '82%' }; 
+					}else{
+				
+						console.log("land_resize:")
+					
+						//joystick.options.position = { left: '15%', top: '69%' };
+					}
+
 				}
 				
 			}
@@ -685,7 +697,7 @@ class PickHelper {
   window.addEventListener('touchend', clearPickPosition);
 
   window.addEventListener('pointermove', (event) => {
-	if(window.innerWidth<1024 && touchPosition.y==0){
+	if(window.mobileCheck() && touchPosition.y==0){
 		camera.rotation.y -= event.movementX / 500;
 		camera.rotation.x -= event.movementY / 500;
 	  

@@ -139,13 +139,14 @@ margin: 0 auto;
       }
 }
 
+
+
 /* Portrait orientation */
 @media screen and (orientation: portrait) {
     
 
     .nipple{
-        left: 30%;
-        top: 82%;
+
         transform: scale(3);
     }
 
@@ -160,8 +161,7 @@ margin: 0 auto;
 @media screen and (orientation: landscape) {
 
     .nipple{
-        left: 15%;
-        top: 69%;
+ 
         transform: scale(1.2);
     }
 
