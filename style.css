@@ -146,7 +146,8 @@ margin: 0 auto;
     
 
     .nipple{
-
+        top: 82% !important;
+        left: 30% !important;
         transform: scale(3);
     }
 
@@ -161,7 +162,8 @@ margin: 0 auto;
 @media screen and (orientation: landscape) {
 
     .nipple{
- 
+        top: 69% !important;
+        left: 15% !important;
         transform: scale(1.2);
     }
 
