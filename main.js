@@ -69,8 +69,6 @@ window.mobileCheck = function() {
 	return check;
   };
 
-  console.log(window.mobileCheck())
-
 if(portrait.matches) {
 	options.position.top = '82%'
 	options.position.left = '30%'
@@ -86,7 +84,6 @@ if(portrait.matches) {
 
 var joystickManager = nipplejs.create(options);
 
-console.log(joystickManager)
 
 if(!window.mobileCheck()){
 	touchScreen.style.display='none'
@@ -219,18 +216,6 @@ container.addEventListener( 'mousedown', (e) => {
 					pointerlock.style.display='none'
 					initScreen.style.display='none'
 					touchScreen.style.display='flex'
-					if(!portrait){
-				
-						console.log("port_resize:")
-						
-						//joystick.options.position = { left: '30%', top: '82%' }; 
-					}else{
-				
-						console.log("land_resize:")
-					
-						//joystick.options.position = { left: '15%', top: '69%' };
-					}
-
 				}
 				
 			}
@@ -368,6 +353,7 @@ container.addEventListener( 'mousedown', (e) => {
 ///////////////////////TOUCH CONTROLS///////////////////////////
 
 let touchPosition = {x:0,y:0}
+let touchStartPosition = {x:0,y:0}
 
 joystickManager.on('move',(e)=>{
 	touchPosition.x = e.target.nipples[0].frontPosition.x
@@ -628,7 +614,7 @@ class PickHelper {
 
   const pickPosition = {x: 0, y: 0};
   //clearPickPosition();
-/*
+
   function getCanvasRelativePosition(event) {
 	const rect = container.getBoundingClientRect();
 	return {
@@ -636,7 +622,7 @@ class PickHelper {
 	  y: (event.clientY - rect.top ) * window.innerHeight  / rect.height,
 	};
   }
-  */ 
+   
   function setPickPosition(event) {
 	//const pos = getCanvasRelativePosition(event);
 	const rect = container.getBoundingClientRect();
@@ -645,6 +631,16 @@ class PickHelper {
 	//pickPosition.y = (pos.y / window.innerHeight ) * -2 + 1;  // note we flip Y
 	pickPosition.x = (rect.left/2 ) //*  2 - 1;
 	pickPosition.y = (rect.top/2 ) //* -2 + 1;  // note we flip Y
+	//console.log(pickPosition)
+  }
+  function setTouchPosition(event) {
+	const pos = getCanvasRelativePosition(event);
+	const rect = container.getBoundingClientRect();
+	//console.log(pos)
+	touchStartPosition.x = (pos.x / window.innerWidth ) *  2 - 1;
+	touchStartPosition.y = (pos.y / window.innerHeight ) * -2 + 1;  // note we flip Y
+	//pickPosition.x = (rect.left/2 ) //*  2 - 1;
+	//pickPosition.y = (rect.top/2 ) //* -2 + 1;  // note we flip Y
 	//console.log(pickPosition)
   }
   
@@ -691,12 +687,14 @@ class PickHelper {
   window.addEventListener('touchstart', (event) => {
 	// prevent the window from scrolling
 	event.preventDefault();
-	setPickPosition(event.touches[0]);
+	//setPickPosition(event.touches[0]);
+	setTouchPosition(event.touches[0]);
+	console.log(pickHelper.pickedObject.name)
   }, {passive: false});
    
   window.addEventListener('touchmove', (event) => {
-	
-	setPickPosition(event.touches[0]);
+	//setPickPosition(event.touches[0]);
+	setTouchPosition(event.touches[0]);
   });
    
   window.addEventListener('touchend', clearPickPosition);
