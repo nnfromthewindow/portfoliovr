@@ -23,7 +23,8 @@ const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.rotation.order = 'YXZ';
-camera.rotation.set( 0, -80.11, 0 );
+//camera.rotation.set( 0, -80.11, 0 );
+//camera.rotation.set( 0, -10.38, 0 );
 
 
 
@@ -33,6 +34,7 @@ const initScreen = document.getElementById('init-screen');
 const pointerlock = document.getElementById('pointerlock');
 const touchScreen = document.getElementById('touch-screen');
 const jump = document.getElementById('jump');
+let playerCollider;
 
 var options = {
 	zone: document.getElementById('zone_joystick'),
@@ -50,7 +52,7 @@ portrait.addEventListener("change", function(e) {
        console.log("PORTRAIT")
 	   if(window.mobileCheck()){
 		renderer.setPixelRatio(0.5)
-
+console.log(camera)
 	}
     } else {
         console.log("LANDSCAPE")
@@ -72,9 +74,14 @@ window.mobileCheck = function() {
 if(portrait.matches) {
 	options.position.top = '82%'
 	options.position.left = '30%'
+	//camera.position.set(3.824,1.862,-1.821)
+	camera.rotation.set(0,-10.4,0)
+	playerCollider = new Capsule( new THREE.Vector3( 4.8, 0.35, -1 ), new THREE.Vector3( 4.8, 1.8, -1 ), 0.35 );
 }else{
 	options.position.top = '69%'
 	options.position.left = '15%'
+	camera.rotation.set( 0, -80.11, 0 );
+	playerCollider = new Capsule( new THREE.Vector3( 3, 0.35, 0 ), new THREE.Vector3( 3, 1.8, 0 ), 0.35 );
 }
 
 var joystickManager = nipplejs.create(options);
@@ -126,10 +133,11 @@ const STEPS_PER_FRAME = 5;
 
 const worldOctree = new Octree();
 
-const playerCollider = new Capsule( new THREE.Vector3( 3, 0.35, 0 ), new THREE.Vector3( 3, 1.8, 0 ), 0.35 );
+
 
 const playerVelocity = new THREE.Vector3();
 const playerDirection = new THREE.Vector3();
+
 
 
 let playerOnFloor = false;
@@ -375,11 +383,7 @@ jump.addEventListener('touchstart', (e)=>{
 
 	if ( playerOnFloor ) {
 
-
-
-			playerVelocity.y = 10;
-
-		
+			playerVelocity.y = 10;	
 
 	}
 })
@@ -643,6 +647,7 @@ class PickHelper {
 	pickPosition.y = (rect.top/2 ) //* -2 + 1;  // note we flip Y
 	//console.log(pickPosition)
   }
+  
    
   function clearPickPosition() {
 	// unlike the mouse which always has a position
