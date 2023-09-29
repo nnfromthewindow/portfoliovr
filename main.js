@@ -352,8 +352,8 @@ container.addEventListener( 'mousedown', (e) => {
 
 ///////////////////////TOUCH CONTROLS///////////////////////////
 
-let touchPosition = {x:0,y:0}
-let touchStartPosition = {x:0,y:0}
+const touchPosition = {x:0,y:0}
+const touchStartPosition = {x:0,y:0}
 
 joystickManager.on('move',(e)=>{
 	touchPosition.x = e.target.nipples[0].frontPosition.x
@@ -689,7 +689,8 @@ class PickHelper {
 	event.preventDefault();
 	//setPickPosition(event.touches[0]);
 	setTouchPosition(event.touches[0]);
-	console.log(pickHelper.pickedObject.name)
+	flag=true
+	clickFunction()
   }, {passive: false});
    
   window.addEventListener('touchmove', (event) => {
@@ -781,8 +782,14 @@ const clickFunction = (e) =>{
 				}
 
 				mixer.update(deltaTime)
-				pickHelper.pick(pickPosition, scene, camera, deltaTime);
+				if(window.mobileCheck()){
+					pickHelper.pick(touchStartPosition, scene, camera, deltaTime);
+				
+				}else{
+					pickHelper.pick(pickPosition, scene, camera, deltaTime);
 
+				}
+				
 				renderer.render( scene, camera );
 
 				requestAnimationFrame( animate );
