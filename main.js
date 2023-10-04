@@ -31,11 +31,13 @@ gltfLoader.load('./assets/blender_test.gltf', function(gltf) {
 	
 	//DESKTOP CHECK
 	if(!window.mobileCheck()){
+		crosshair.style.display='block'
 		touchScreen.style.display='none'
 		initScreen.style.display='flex'
 		jump.style.display='none'
 	}
 	if(window.mobileCheck()){
+		crosshair.style.display='none'
 		touchScreen.style.display='flex'
 		initScreen.style.display='none'
 		jump.style.display='flex'
@@ -117,12 +119,13 @@ loadManager.onLoad = function() {
 		if(child.name == "mail_box"){
 			child.visible = false
 		}
+
+	
 		
 	} );
 	
-	
-		progressBarContainer.style.display = 'none';
-		crosshair.style.display='block'
+	progressBarContainer.style.display = 'none';
+
 	
 	//CREATE JOYSTICK
 	joystickManager = nipplejs.create(options);
@@ -150,6 +153,7 @@ loadManager.onLoad = function() {
 
 loadManager.onProgress = function(url, loaded, total) {
     progressBar.value = (loaded / total) * 100;
+	crosshair.style.display='none'
 }
 
 const progressBarContainer = document.querySelector('.progress-bar-container');
@@ -163,6 +167,8 @@ const pointerlock = document.getElementById('pointerlock');
 const touchScreen = document.getElementById('touch-screen');
 const jump = document.getElementById('jump');
 const progressBar = document.getElementById('progress-bar');
+const vr = document.getElementById('vr');
+
 
 //THREE.JS VARIABLES
 const clock = new THREE.Clock();
@@ -177,8 +183,8 @@ let portrait = window.matchMedia("(orientation: portrait)");
 //HIDE CONTROLS
 initScreen.style.display='none'
 touchScreen.style.display='none'
-crosshair.style.display='none'
 jump.style.display='none'
+
 
 //NIPPLE.JS OPTIONS
 var options = {
@@ -219,12 +225,15 @@ if(portrait.matches) {
 
 //DESKTOP POINTERLOCK
 pointerlock.addEventListener('click', ()=>{
+	if(crosshair.style.display='none'){
+		crosshair.style.display='block'
+	}
 	flag=false
 	flag2=true
 		document.body.requestPointerLock();
 
 		mouseTime = performance.now();		
-		//pointerlock.style.display='none'
+	
 	setTimeout(()=>{
 	if(!window.mobileCheck()){
 	flag =true
@@ -242,6 +251,12 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.xr.enabled = true;
 document.body.appendChild( VRButton.createButton( renderer ) );
 container.appendChild( renderer.domElement );
+
+const vrButton = document.getElementById('VRButton');
+
+vrButton.addEventListener('touchstart', (e)=>{
+	vrButton.click()
+})
 
 //SET PIXEL RATIO
 if(portrait.matches){
@@ -299,12 +314,14 @@ function onWindowResize() {
 	
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	if(!window.mobileCheck()){
+		crosshair.style.display='block'
 		pointerlock.style.display='block'
 		initScreen.style.display='flex'
 		touchScreen.style.display='none'
 		jump.style.display='none'
 		renderer.setPixelRatio( window.devicePixelRatio );
 	}else{
+		crosshair.style.display='none'
 		pointerlock.style.display='none'
 		initScreen.style.display='none'
 		touchScreen.style.display='flex'
@@ -613,6 +630,7 @@ function clearPickPosition() {
 // unlikely to pick something
 flag=false
 flag2=false
+
 if(!window.mobileCheck()){
 	initScreen.style.display='flex'
 }else{
