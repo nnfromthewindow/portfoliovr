@@ -26,8 +26,7 @@ let model, mixer, animations, joystickManager;
 gltfLoader.load('./assets/blender_test.gltf', function(gltf) {
 	model = gltf.scene;
 	animations = gltf.animations
-	worldOctree.fromGraphNode(model);
-	scene.add(model);
+
 	
 	
 	//DESKTOP CHECK
@@ -49,7 +48,11 @@ var options = {
 	position: {left: '30%', top: '0%'},
 	color: 'red'
 };
+worldOctree.fromGraphNode(model);
+scene.add(model);
 });
+
+let materials
 
 //LOAD MANAGER ON LOAD FUNCTION
 loadManager.onLoad = function() {
@@ -120,26 +123,29 @@ loadManager.onLoad = function() {
 	
 		progressBarContainer.style.display = 'none';
 		crosshair.style.display='block'
-		//CREATE JOYSTICK
-joystickManager = nipplejs.create(options);
+	
+	//CREATE JOYSTICK
+	joystickManager = nipplejs.create(options);
 
-joystickManager.on('move',(e)=>{
-	touchPosition.x = e.target.nipples[0].frontPosition.x
-	touchPosition.y = e.target.nipples[0].frontPosition.y
-})
+	joystickManager.on('move',(e)=>{
+		touchPosition.x = e.target.nipples[0].frontPosition.x
+		touchPosition.y = e.target.nipples[0].frontPosition.y
+	})
 
-joystickManager.on('end',(e)=>{
-	touchPosition.x = 0
-	touchPosition.y = 0
-})
+	joystickManager.on('end',(e)=>{
+		touchPosition.x = 0
+		touchPosition.y = 0
+	})
 
-	}
-const materials = [
-	new THREE.MeshBasicMaterial({map: imageLoader.load('assets/frente.jpg')}),
-	new THREE.MeshBasicMaterial({map: imageLoader.load('assets/interior.jpg')}),
-	new THREE.MeshBasicMaterial({map: imageLoader.load('assets/barra.jpg')}),
-			
-]
+	materials = [
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/frente.jpg')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/interior.jpg')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/barra.jpg')}),
+				
+	]
+
+}
+
 //LOADING BAR
 
 loadManager.onProgress = function(url, loaded, total) {
@@ -296,11 +302,13 @@ function onWindowResize() {
 		pointerlock.style.display='block'
 		initScreen.style.display='flex'
 		touchScreen.style.display='none'
+		jump.style.display='none'
 		renderer.setPixelRatio( window.devicePixelRatio );
 	}else{
 		pointerlock.style.display='none'
 		initScreen.style.display='none'
 		touchScreen.style.display='flex'
+		jump.style.display='flex'
 	}
 	
 }
@@ -663,14 +671,14 @@ const pickHelper = new PickHelper();
 const clickFunction = (e) =>{
 	//CINEMA SCREEN NEXT IMAGE BUTTON FUNCTION
 	if(pickHelper.pickedObject.name == "next_btn"){
-
+		
 		model.traverse((child)=>{
 			if(child.name == "cinema_screen"){
 				
 				const id = child.material.map.uuid
 				const array = materials.map((img)=>img.map.uuid)
 				const index = array.indexOf(id)
-
+				
 				if(index<array.length-1){
 					child.material.map = materials[index+1].map
 					child.material.map.wrapS = THREE.RepeatWrapping;
@@ -721,7 +729,7 @@ for ( let i = 0; i < STEPS_PER_FRAME; i ++ ) {
 
 controls( deltaTime );
 touchControls(deltaTime)
-updatePlayer( deltaTime );
+if(model)updatePlayer( deltaTime );
 
 teleportPlayerIfOob();
 
