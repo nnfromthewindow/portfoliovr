@@ -167,7 +167,6 @@ const pointerlock = document.getElementById('pointerlock');
 const touchScreen = document.getElementById('touch-screen');
 const jump = document.getElementById('jump');
 const progressBar = document.getElementById('progress-bar');
-const vr = document.getElementById('vr');
 
 
 //THREE.JS VARIABLES
@@ -252,11 +251,21 @@ renderer.xr.enabled = true;
 document.body.appendChild( VRButton.createButton( renderer ) );
 container.appendChild( renderer.domElement );
 
+//VR BUTTON
 const vrButton = document.getElementById('VRButton');
 
 vrButton.addEventListener('touchstart', (e)=>{
 	vrButton.click()
 })
+
+renderer.xr.addEventListener('sessionend',()=>{
+	camera.rotation.set(0,-10.4,0)
+	camera.fov=70
+	camera.aspect=window.innerWidth / window.innerHeight
+	camera.near=0.1
+	camera.far=1000
+
+ })
 
 //SET PIXEL RATIO
 if(portrait.matches){
@@ -282,7 +291,7 @@ const touchPosition = {x:0,y:0}
 const touchStartPosition = {x:0,y:0}
 const pickPosition = {x: 0, y: 0};
 
-//KEYS EVENT LISTENERS LISTENERS
+//KEYS EVENT LISTENERS
 document.addEventListener( 'keydown', ( event ) => {
 
 	keyStates[ event.code ] = true;
@@ -628,6 +637,7 @@ function clearPickPosition() {
 // if the user stops touching the screen we want
 // to stop picking. For now we just pick a value
 // unlikely to pick something
+if(!flag)crosshair.style.display='none'
 flag=false
 flag2=false
 
@@ -732,7 +742,9 @@ const clickFunction = (e) =>{
 }
 
  window.addEventListener('click', clickFunction)
-  
+
+
+ 
 
 //-----------------ANIMATE FUNCTION--------------------------------
 
