@@ -124,6 +124,7 @@ loadManager.onLoad = function() {
 		
 	} );
 	
+	console.log(model.children)
 	progressBarContainer.style.display = 'none';
 
 	
@@ -907,7 +908,7 @@ INTERSECTION = undefined;
 
 					raycaster.ray.origin.setFromMatrixPosition( controller1.matrixWorld );
 					raycaster.ray.direction.set( 0, 0, - 1 ).applyMatrix4( tempMatrix );
-					const intersects = raycaster.intersectObjects( [ model.children[3] ] );
+					const intersects = raycaster.intersectObjects( [ model.children[138] ] );
 
 					if ( intersects.length > 0 ) {
 
@@ -922,7 +923,7 @@ INTERSECTION = undefined;
 					raycaster.ray.origin.setFromMatrixPosition( controller2.matrixWorld );
 					raycaster.ray.direction.set( 0, 0, - 1 ).applyMatrix4( tempMatrix );
 
-					const intersects = raycaster.intersectObjects( [  model.children[3] ] );
+					const intersects = raycaster.intersectObjects( [  model.children[138] ] );
 
 					if ( intersects.length > 0 ) {
 
