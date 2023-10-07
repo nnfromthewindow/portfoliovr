@@ -249,6 +249,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.VSMShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.xr.enabled = true;
+renderer.xr.setFramebufferScaleFactor(2.0);
 document.body.appendChild( VRButton.createButton( renderer ) );
 container.appendChild( renderer.domElement );
 
@@ -304,7 +305,8 @@ renderer.xr.addEventListener( 'sessionstart', () => baseReferenceSpace = rendere
 						const offsetRotation = new THREE.Quaternion();
 						const transform = new XRRigidTransform( offsetPosition, offsetRotation );
 						const teleportSpaceOffset = baseReferenceSpace.getOffsetReferenceSpace( transform );
-
+						console.log(transform)
+						console.log(teleportSpaceOffset)
 						renderer.xr.setReferenceSpace( teleportSpaceOffset );
 
 					}
@@ -642,10 +644,18 @@ function vrControls( deltaTime ) {
 
 	// gives a bit of air control
 	const speedDelta = deltaTime * ( playerOnFloor ? 25 : 8 );
-console.log(rightStickPosition[3])
-	if ( rightStickPosition[3]>=-1 && rightStickPosition[3]<0) {
 
+	if ( rightStickPosition[3]>=-1 && rightStickPosition[3]<0) {
+		
 		playerVelocity.add( getForwardVector().multiplyScalar( speedDelta ) );
+
+		const offsetPosition = camera.getWorldPosition(camera.position);
+		const offsetRotation = new THREE.Quaternion();
+		const transform = new XRRigidTransform( offsetPosition, offsetRotation );
+		const teleportSpaceOffset = baseReferenceSpace.getOffsetReferenceSpace( transform );
+		console.log(transform)
+		console.log(teleportSpaceOffset)
+		renderer.xr.setReferenceSpace( teleportSpaceOffset );
 
 	}
 	
@@ -921,7 +931,7 @@ const clickFunction = (e) =>{
 
 function animate() {
 //console.log(leftStickPosition)
-console.log(rightStickPosition)
+//console.log(rightStickPosition)
 const deltaTime = Math.min( 0.05, clock.getDelta() ) / STEPS_PER_FRAME;
 
 // we look for collisions in substeps to mitigate the risk of
@@ -947,6 +957,11 @@ if(model)pickHelper.pick(touchStartPosition, scene, camera, deltaTime);
 }else{
 	if(model)pickHelper.pick(pickPosition, scene, camera, deltaTime);
 
+}
+
+if(renderer.xr.isPresenting){
+//console.log(renderer.xr.getCamera())
+//renderer.xr.getCamera().position.copy(camera.position)
 }
 
 INTERSECTION = undefined;
