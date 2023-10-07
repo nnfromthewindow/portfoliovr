@@ -271,7 +271,7 @@ renderer.xr.addEventListener('sessionend',()=>{
  let controller1, controller2;
  let controllerGrip1, controllerGrip2;
 
- let room, marker, baseReferenceSpace;
+ let marker, baseReferenceSpace;
 
  let INTERSECTION;
  const tempMatrix = new THREE.Matrix4();
@@ -310,15 +310,16 @@ renderer.xr.addEventListener( 'sessionstart', () => baseReferenceSpace = rendere
 					}
 
 				}
-
+				let leftStickPosition = [0,0,0,0];
+				let rightStickPosition = [0,0,0,0];
 				controller1 = renderer.xr.getController( 0 );
 				controller1.addEventListener( 'selectstart', onSelectStart );
 				controller1.addEventListener( 'selectend', onSelectEnd );
-				controller1.addEventListener( 'connected', function ( event ) {
-
-					this.add( buildController( event.data ) );
-
+				controller1.addEventListener( 'connected', function ( e ) {
+					rightStickPosition = e.data.gamepad.axes
+					this.add( buildController( e.data ) );
 				} );
+
 				controller1.addEventListener( 'disconnected', function () {
 
 					this.remove( this.children[ 0 ] );
@@ -329,9 +330,9 @@ renderer.xr.addEventListener( 'sessionstart', () => baseReferenceSpace = rendere
 				controller2 = renderer.xr.getController( 1 );
 				controller2.addEventListener( 'selectstart', onSelectStart );
 				controller2.addEventListener( 'selectend', onSelectEnd );
-				controller2.addEventListener( 'connected', function ( event ) {
-
-					this.add( buildController( event.data ) );
+				controller2.addEventListener( 'connected', function ( e ) {
+					leftStickPosition = e.data.gamepad.axes
+					this.add( buildController( e.data ) );
 
 				} );
 				controller2.addEventListener( 'disconnected', function () {
@@ -636,6 +637,50 @@ const touchControls = (deltaTime) =>{
 				}
 }
 
+//VR CONTROLS
+function vrControls( deltaTime ) {
+
+	// gives a bit of air control
+	const speedDelta = deltaTime * ( playerOnFloor ? 25 : 8 );
+console.log(rightStickPosition[3])
+	if ( rightStickPosition[3]>=-1 && rightStickPosition[3]<0) {
+
+		playerVelocity.add( getForwardVector().multiplyScalar( speedDelta ) );
+
+	}
+	
+
+	if ( keyStates[ 'KeyS' ] ) {
+
+		playerVelocity.add( getForwardVector().multiplyScalar( - speedDelta ) );
+
+	}
+
+	if ( keyStates[ 'KeyA' ] ) {
+
+		playerVelocity.add( getSideVector().multiplyScalar( - speedDelta ) );
+
+	}
+
+	if ( keyStates[ 'KeyD' ] ) {
+
+		playerVelocity.add( getSideVector().multiplyScalar( speedDelta ) );
+
+	}
+
+
+	if ( playerOnFloor ) {
+
+		if ( keyStates[ 'Space' ] ) {
+
+			playerVelocity.y = 10;
+
+		}
+
+	}
+
+}
+
 
 
 //SCENE ADD MODEL
@@ -875,7 +920,8 @@ const clickFunction = (e) =>{
 
 
 function animate() {
-
+//console.log(leftStickPosition)
+console.log(rightStickPosition)
 const deltaTime = Math.min( 0.05, clock.getDelta() ) / STEPS_PER_FRAME;
 
 // we look for collisions in substeps to mitigate the risk of
@@ -885,6 +931,9 @@ for ( let i = 0; i < STEPS_PER_FRAME; i ++ ) {
 
 controls( deltaTime );
 touchControls(deltaTime)
+vrControls(deltaTime)
+
+
 if(model)updatePlayer( deltaTime );
 
 teleportPlayerIfOob();
