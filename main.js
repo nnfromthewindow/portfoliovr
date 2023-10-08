@@ -590,7 +590,7 @@ function controls( deltaTime ) {
 		}
 
 	}
-
+//console.log(camera.position)
 }
 
 //TOUCH CONTROLS
@@ -645,81 +645,40 @@ const touchControls = (deltaTime) =>{
 
 //VR CONTROLS
 function vrControls( deltaTime ) {
+	const speedMultiplier = playerOnFloor ? 900 : 500;
+    const gravity = -700; // Ajusta la gravedad según tus necesidades
 
-	// gives a bit of air control
-	const speedDelta = deltaTime * ( playerOnFloor ? 25 : 8 );
-	//vr headset position
-	const offsetPosition = camera.position.add(new THREE.Vector3(0,-1.8,0)).negate();
-	const offsetRotation = new THREE.Quaternion();
-	const transform = new XRRigidTransform( offsetPosition, offsetRotation );
-	const teleportSpaceOffset = baseReferenceSpace.getOffsetReferenceSpace( transform );
-	
-	if ( rightStickPosition[3]>=-1 && rightStickPosition[3]<0) {
+    const movement = new THREE.Vector3();
 
-		playerVelocity.add( getForwardVector().multiplyScalar( speedDelta ) );
-		renderer.xr.setReferenceSpace( teleportSpaceOffset );
+    movement.add(getForwardVector().multiplyScalar(-rightStickPosition[3] * deltaTime * speedMultiplier));
+    movement.add(getSideVector().multiplyScalar(rightStickPosition[2] * deltaTime * speedMultiplier));
 
-	}
-	
+    movement.add(getForwardVector().multiplyScalar(-leftStickPosition[3] * deltaTime * speedMultiplier));
+    movement.add(getSideVector().multiplyScalar(leftStickPosition[2] * deltaTime * speedMultiplier));
 
-	if (rightStickPosition[3]<=1 && rightStickPosition[3]>0) {
+    // Aplica el movimiento a la velocidad del jugador
+    playerVelocity.copy(movement);
 
-		playerVelocity.add( getForwardVector().multiplyScalar( - speedDelta ) );
-		renderer.xr.setReferenceSpace( teleportSpaceOffset );
+	if (playerOnFloor) {
+        if (rightJumpButton[4].pressed) {
+            // Aplica una aceleración inicial hacia arriba
+            playerVelocity.y = 800;
+        } else {
+            playerVelocity.y = 0; // Detiene la velocidad vertical si no se presiona el botón de salto
+        }
+    } else {
+        // Aplica la gravedad para que el personaje caiga suavemente
+        playerVelocity.y += gravity * deltaTime;
+    }
 
-	}
-
-	if ( leftStickPosition[3]>=-1 && leftStickPosition[3]<0) {
-
-		playerVelocity.add( getForwardVector().multiplyScalar( speedDelta ) );
-		renderer.xr.setReferenceSpace( teleportSpaceOffset );
-
-	}
-	
-
-	if (leftStickPosition[3]<=1 && leftStickPosition[3]>0) {
-
-		playerVelocity.add( getForwardVector().multiplyScalar( - speedDelta ) );
-		renderer.xr.setReferenceSpace( teleportSpaceOffset );
-
-	}
-
-	if (rightStickPosition[2]>=-1 && rightStickPosition[2]<0 ) {
-		playerVelocity.add( getSideVector().multiplyScalar( - speedDelta ) );
-		renderer.xr.setReferenceSpace( teleportSpaceOffset );
-	}
-
-	if ( rightStickPosition[2]<=1 && rightStickPosition[2]>0 ) {
-
-		playerVelocity.add( getSideVector().multiplyScalar( speedDelta ) );
-		renderer.xr.setReferenceSpace( teleportSpaceOffset );
-	}
-
-	if (leftStickPosition[2]>=-1 && leftStickPosition[2]<0 ) {
-		playerVelocity.add( getSideVector().multiplyScalar( - speedDelta ) );
-		renderer.xr.setReferenceSpace( teleportSpaceOffset );
-	}
-
-	if ( leftStickPosition[2]<=1 && leftStickPosition[2]>0 ) {
-
-		playerVelocity.add( getSideVector().multiplyScalar( speedDelta ) );
-		renderer.xr.setReferenceSpace( teleportSpaceOffset );
-	}
-	if(rightJumpButton[4].pressed){
-		console.log("JUMP")
-	}
-
-
-	if ( playerOnFloor ) {
-
-		if ( rightJumpButton[4].pressed) {
-
-			playerVelocity.y = 10;
-			renderer.xr.setReferenceSpace( teleportSpaceOffset );
-		}
-
-	}
-
+    // Establece el espacio de referencia solo una vez al final
+    const offsetPosition = camera.position.clone().add(new THREE.Vector3(0, -2.02, 0)).negate();
+    const offsetRotation = new THREE.Quaternion();
+    const transform = new XRRigidTransform(offsetPosition, offsetRotation);
+    const teleportSpaceOffset = baseReferenceSpace.getOffsetReferenceSpace(transform);
+    renderer.xr.setReferenceSpace(teleportSpaceOffset);
+	console.log(camera.position)
+	console.log(renderer.xr.getCamera().position)
 }
 
 
@@ -970,8 +929,11 @@ const deltaTime = Math.min( 0.05, clock.getDelta() ) / STEPS_PER_FRAME;
 
 for ( let i = 0; i < STEPS_PER_FRAME; i ++ ) {
 
-controls( deltaTime );
-touchControls(deltaTime)
+	if(!renderer.xr.isPresenting){
+		controls( deltaTime );
+		touchControls(deltaTime)
+	}
+
 if(renderer.xr.isPresenting)vrControls(deltaTime)
 
 
@@ -991,7 +953,7 @@ if(model)pickHelper.pick(touchStartPosition, scene, camera, deltaTime);
 }
 
 if(renderer.xr.isPresenting){
-	
+	//console.log(renderer.xr.getSession())
 //renderer.xr.getCamera().position.copy(camera.position)
 }
 
