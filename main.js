@@ -35,6 +35,7 @@ gltfLoader.load('./assets/blender_test.gltf', function(gltf) {
 		touchScreen.style.display='none'
 		initScreen.style.display='flex'
 		jump.style.display='none'
+		renderer.setPixelRatio( window.devicePixelRatio )
 	}
 	if(window.mobileCheck()){
 		crosshair.style.display='none'
@@ -314,11 +315,14 @@ renderer.xr.addEventListener( 'sessionstart', () => baseReferenceSpace = rendere
 				}
 				let leftStickPosition = [0,0,0,0];
 				let rightStickPosition = [0,0,0,0];
+				let leftJumpButton
+				let rightJumpButton
 				controller1 = renderer.xr.getController( 0 );
 				controller1.addEventListener( 'selectstart', onSelectStart );
 				controller1.addEventListener( 'selectend', onSelectEnd );
 				controller1.addEventListener( 'connected', function ( e ) {
 					rightStickPosition = e.data.gamepad.axes
+					rightJumpButton = e.data.gamepad.buttons
 					this.add( buildController( e.data ) );
 				} );
 
@@ -644,47 +648,74 @@ function vrControls( deltaTime ) {
 
 	// gives a bit of air control
 	const speedDelta = deltaTime * ( playerOnFloor ? 25 : 8 );
-
+	//vr headset position
+	const offsetPosition = camera.position.add(new THREE.Vector3(0,-1.8,0)).negate();
+	const offsetRotation = new THREE.Quaternion();
+	const transform = new XRRigidTransform( offsetPosition, offsetRotation );
+	const teleportSpaceOffset = baseReferenceSpace.getOffsetReferenceSpace( transform );
+	
 	if ( rightStickPosition[3]>=-1 && rightStickPosition[3]<0) {
-		
-		playerVelocity.add( getForwardVector().multiplyScalar( speedDelta ) );
 
-		const offsetPosition = camera.getWorldPosition(camera.position);
-		const offsetRotation = new THREE.Quaternion();
-		const transform = new XRRigidTransform( offsetPosition, offsetRotation );
-		const teleportSpaceOffset = baseReferenceSpace.getOffsetReferenceSpace( transform );
-		console.log(transform)
-		console.log(teleportSpaceOffset)
+		playerVelocity.add( getForwardVector().multiplyScalar( speedDelta ) );
 		renderer.xr.setReferenceSpace( teleportSpaceOffset );
 
 	}
 	
 
-	if ( keyStates[ 'KeyS' ] ) {
+	if (rightStickPosition[3]<=1 && rightStickPosition[3]>0) {
 
 		playerVelocity.add( getForwardVector().multiplyScalar( - speedDelta ) );
+		renderer.xr.setReferenceSpace( teleportSpaceOffset );
 
 	}
 
-	if ( keyStates[ 'KeyA' ] ) {
+	if ( leftStickPosition[3]>=-1 && leftStickPosition[3]<0) {
 
+		playerVelocity.add( getForwardVector().multiplyScalar( speedDelta ) );
+		renderer.xr.setReferenceSpace( teleportSpaceOffset );
+
+	}
+	
+
+	if (leftStickPosition[3]<=1 && leftStickPosition[3]>0) {
+
+		playerVelocity.add( getForwardVector().multiplyScalar( - speedDelta ) );
+		renderer.xr.setReferenceSpace( teleportSpaceOffset );
+
+	}
+
+	if (rightStickPosition[2]>=-1 && rightStickPosition[2]<0 ) {
 		playerVelocity.add( getSideVector().multiplyScalar( - speedDelta ) );
-
+		renderer.xr.setReferenceSpace( teleportSpaceOffset );
 	}
 
-	if ( keyStates[ 'KeyD' ] ) {
+	if ( rightStickPosition[2]<=1 && rightStickPosition[2]>0 ) {
 
 		playerVelocity.add( getSideVector().multiplyScalar( speedDelta ) );
+		renderer.xr.setReferenceSpace( teleportSpaceOffset );
+	}
 
+	if (leftStickPosition[2]>=-1 && leftStickPosition[2]<0 ) {
+		playerVelocity.add( getSideVector().multiplyScalar( - speedDelta ) );
+		renderer.xr.setReferenceSpace( teleportSpaceOffset );
+	}
+
+	if ( leftStickPosition[2]<=1 && leftStickPosition[2]>0 ) {
+
+		playerVelocity.add( getSideVector().multiplyScalar( speedDelta ) );
+		renderer.xr.setReferenceSpace( teleportSpaceOffset );
+	}
+	if(rightJumpButton[4].pressed){
+		console.log("JUMP")
 	}
 
 
 	if ( playerOnFloor ) {
 
-		if ( keyStates[ 'Space' ] ) {
+		if ( rightJumpButton[4].pressed) {
 
 			playerVelocity.y = 10;
-
+			renderer.xr.setReferenceSpace( teleportSpaceOffset );
 		}
 
 	}
@@ -941,7 +972,7 @@ for ( let i = 0; i < STEPS_PER_FRAME; i ++ ) {
 
 controls( deltaTime );
 touchControls(deltaTime)
-vrControls(deltaTime)
+if(renderer.xr.isPresenting)vrControls(deltaTime)
 
 
 if(model)updatePlayer( deltaTime );
@@ -960,7 +991,7 @@ if(model)pickHelper.pick(touchStartPosition, scene, camera, deltaTime);
 }
 
 if(renderer.xr.isPresenting){
-//console.log(renderer.xr.getCamera())
+	
 //renderer.xr.getCamera().position.copy(camera.position)
 }
 
