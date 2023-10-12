@@ -7,7 +7,8 @@ import { TextureLoader,LoadingManager } from 'three';
 import nipplejs from 'nipplejs';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
-
+import { fetchProfile, MotionController } from '@webxr-input-profiles/motion-controllers'
+import { Constants } from '@webxr-input-profiles/motion-controllers';
 
 //MOBILE CHECK FUNCTION
 window.mobileCheck = function() {
@@ -261,6 +262,81 @@ vrButton.addEventListener('touchstart', (e)=>{
 	vrButton.click()
 })
 
+let xrSession
+
+renderer.xr.addEventListener( 'sessionstart', () =>{ 
+	baseReferenceSpace = renderer.xr.getReferenceSpace() 
+	//animationFrameRequestID = renderer.xr.getFrame()
+	xrSession = renderer.xr.getSession()
+	xrSession.addEventListener('inputsourceschange', onInputSourcesChange);
+});
+
+function onInputSourcesChange(event) {
+	event.added.forEach((xrInputSource) => {
+		console.log(xrInputSource)
+	  createMotionController(xrInputSource);
+	});
+  };
+
+  const uri = 'node_modules/@webxr-input-profiles/assets/dist/profiles';
+  const motionControllers = {};
+  
+  async function createMotionController(xrInputSource) {
+	const { profile, assetPath } = await fetchProfile(xrInputSource, uri);
+	const motionController = new MotionController(xrInputSource, profile, assetPath);
+	motionControllers[xrInputSource] = motionController;
+	addMotionControllerToScene(motionController);
+  }  
+
+
+  function processTriggerInput(trigger) {
+	if (trigger.state === Constants.ComponentState.PRESSED) {
+	  // Fire ray gun
+	} else if (trigger.state === Constants.ComponentState.TOUCHED) {
+	  const chargeLevel = trigger.buttonValue;
+	  // Show ray gun charging up
+	}
+  }
+
+  function processThumbstickInput(thumbstick) {
+	if (thumbstick.values.state === Constants.ComponentState.PRESSED) {
+	  // Align the world orientation to the user's current orientation
+	} else if (thumbstick.values.state === Constants.ComponentState.TOUCHED
+			   && thumbstick.values.yAxis !== 0) {
+	  const scootDistance = thumbstick.values.yAxis * scootIncrement;
+	  // Scoot the user forward
+	}
+  }
+
+   function addMotionControllerToScene(motionController) {
+	
+	gltfLoader.load(motionController.assetUrl, function(gltf){
+		console.log(gltf)
+		const model = gltf.scene
+		console.log(model)
+		addTouchPointDots(motionController, model);
+		scene.add(model);
+	});
+	
+	//console.log(motionController.assetUrl)
+	
+  }
+
+  function addTouchPointDots(motionController, asset) {
+	Object.values(motionController.components).forEach((component) => {
+	  if (component.touchPointNodeName) {
+		const touchPointRoot = asset.getChildByName(component.touchPointNodeName, true);
+		
+		const sphereGeometry = new THREE.SphereGeometry(0.001);
+		const material = new THREE.MeshBasicMaterial({ color: 0x0000FF });
+		const touchPointDot = new THREE.Mesh(sphereGeometry, material);
+		touchPointRoot.add(touchPointDot);
+	  }
+	});
+  }
+
+  
+
 renderer.xr.addEventListener('sessionend',()=>{
 	camera.rotation.set(0,-10.4,0)
 	camera.fov=70
@@ -273,8 +349,8 @@ renderer.xr.addEventListener('sessionend',()=>{
  let controller1, controller2;
  let controllerGrip1, controllerGrip2;
 
- let marker, baseReferenceSpace;
-
+ let marker, baseReferenceSpace, animationFrameRequestID;
+/*
  let INTERSECTION;
  const tempMatrix = new THREE.Matrix4();
 
@@ -286,116 +362,126 @@ scene.add( marker );
 
 raycaster = new THREE.Raycaster();								
 
-renderer.xr.addEventListener( 'sessionstart', () => baseReferenceSpace = renderer.xr.getReferenceSpace() );
 
+
+
+
+let dolly = new THREE.Object3D()
+dolly.position.z=5
+dolly.add(camera)
+dolly.add(playerCollider)
+scene.add(dolly)
+
+let dummyCam = new THREE.Object3D()
+camera.add(dummyCam)
+*/
 // controllers
+/*
+	function onSelectStart() {
 
-				function onSelectStart() {
+		this.userData.isSelecting = true;
 
-					this.userData.isSelecting = true;
+	}
 
-				}
+	function onSelectEnd() {
 
-				function onSelectEnd() {
+		this.userData.isSelecting = false;
 
-					this.userData.isSelecting = false;
+		if ( INTERSECTION ) {
 
-					if ( INTERSECTION ) {
+			const offsetPosition = { x: - INTERSECTION.x, y: - INTERSECTION.y, z: - INTERSECTION.z, w: 1 };
+			const offsetRotation = new THREE.Quaternion();
+			const transform = new XRRigidTransform( offsetPosition, offsetRotation );
+			const teleportSpaceOffset = baseReferenceSpace.getOffsetReferenceSpace( transform );
+			renderer.xr.setReferenceSpace( teleportSpaceOffset );
 
-						const offsetPosition = { x: - INTERSECTION.x, y: - INTERSECTION.y, z: - INTERSECTION.z, w: 1 };
-						const offsetRotation = new THREE.Quaternion();
-						const transform = new XRRigidTransform( offsetPosition, offsetRotation );
-						const teleportSpaceOffset = baseReferenceSpace.getOffsetReferenceSpace( transform );
-						console.log(transform)
-						console.log(teleportSpaceOffset)
-						renderer.xr.setReferenceSpace( teleportSpaceOffset );
+		}
 
-					}
+	}
+	let leftStickPosition = [0,0,0,0];
+	let rightStickPosition = [0,0,0,0];
+	let leftJumpButton
+	let rightJumpButton
+	controller1 = renderer.xr.getController( 0 );
+	controller1.addEventListener( 'selectstart', onSelectStart );
+	controller1.addEventListener( 'selectend', onSelectEnd );
+	controller1.addEventListener( 'connected', function ( e ) {
+		rightStickPosition = e.data.gamepad.axes
+		rightJumpButton = e.data.gamepad.buttons
+		this.add( buildController( e.data ) );
+	} );
+	
 
-				}
-				let leftStickPosition = [0,0,0,0];
-				let rightStickPosition = [0,0,0,0];
-				let leftJumpButton
-				let rightJumpButton
-				controller1 = renderer.xr.getController( 0 );
-				controller1.addEventListener( 'selectstart', onSelectStart );
-				controller1.addEventListener( 'selectend', onSelectEnd );
-				controller1.addEventListener( 'connected', function ( e ) {
-					rightStickPosition = e.data.gamepad.axes
-					rightJumpButton = e.data.gamepad.buttons
-					this.add( buildController( e.data ) );
-				} );
+	controller1.addEventListener( 'disconnected', function () {
 
-				controller1.addEventListener( 'disconnected', function () {
+		this.remove( this.children[ 0 ] );
 
-					this.remove( this.children[ 0 ] );
+	} );
+	scene.add( controller1 );
+//	dolly.add( controller1 );
+	controller2 = renderer.xr.getController( 1 );
+	controller2.addEventListener( 'selectstart', onSelectStart );
+	controller2.addEventListener( 'selectend', onSelectEnd );
+	controller2.addEventListener( 'connected', function ( e ) {
+		leftStickPosition = e.data.gamepad.axes
+		this.add( buildController( e.data ) );
 
-				} );
-				scene.add( controller1 );
+	} );
+	controller2.addEventListener( 'disconnected', function () {
 
-				controller2 = renderer.xr.getController( 1 );
-				controller2.addEventListener( 'selectstart', onSelectStart );
-				controller2.addEventListener( 'selectend', onSelectEnd );
-				controller2.addEventListener( 'connected', function ( e ) {
-					leftStickPosition = e.data.gamepad.axes
-					this.add( buildController( e.data ) );
+		this.remove( this.children[ 0 ] );
 
-				} );
-				controller2.addEventListener( 'disconnected', function () {
+	} );
+	scene.add( controller2 );
+//	dolly.add( controller2 );
+	// The XRControllerModelFactory will automatically fetch controller models
+	// that match what the user is holding as closely as possible. The models
+	// should be attached to the object returned from getControllerGrip in
+	// order to match the orientation of the held device.
 
-					this.remove( this.children[ 0 ] );
+	const controllerModelFactory = new XRControllerModelFactory();
 
-				} );
-				scene.add( controller2 );
+	controllerGrip1 = renderer.xr.getControllerGrip( 0 );
+	controllerGrip1.add( controllerModelFactory.createControllerModel( controllerGrip1 ) );
+	scene.add( controllerGrip1 );
+//	dolly.add(controllerGrip1)
+	controllerGrip2 = renderer.xr.getControllerGrip( 1 );
+	controllerGrip2.add( controllerModelFactory.createControllerModel( controllerGrip2 ) );
+	scene.add( controllerGrip2 );
+//	dolly.add(controllerGrip2)
+	//
 
-				// The XRControllerModelFactory will automatically fetch controller models
-				// that match what the user is holding as closely as possible. The models
-				// should be attached to the object returned from getControllerGrip in
-				// order to match the orientation of the held device.
-
-				const controllerModelFactory = new XRControllerModelFactory();
-
-				controllerGrip1 = renderer.xr.getControllerGrip( 0 );
-				controllerGrip1.add( controllerModelFactory.createControllerModel( controllerGrip1 ) );
-				scene.add( controllerGrip1 );
-
-				controllerGrip2 = renderer.xr.getControllerGrip( 1 );
-				controllerGrip2.add( controllerModelFactory.createControllerModel( controllerGrip2 ) );
-				scene.add( controllerGrip2 );
-
-				//
-
-				window.addEventListener( 'resize', onWindowResize, false );
-
-			
-
-			function buildController( data ) {
-
-				let geometry, material;
-
-				switch ( data.targetRayMode ) {
-
-					case 'tracked-pointer':
-
-						geometry = new THREE.BufferGeometry();
-						geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( [ 0, 0, 0, 0, 0, - 1 ], 3 ) );
-						geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( [ 0.5, 0.5, 0.5, 0, 0, 0 ], 3 ) );
-
-						material = new THREE.LineBasicMaterial( { vertexColors: true, blending: THREE.AdditiveBlending } );
-
-						return new THREE.Line( geometry, material );
-
-					case 'gaze':
-
-						geometry = new THREE.RingGeometry( 0.02, 0.04, 32 ).translate( 0, 0, - 1 );
-						material = new THREE.MeshBasicMaterial( { opacity: 0.5, transparent: true } );
-						return new THREE.Mesh( geometry, material );
-
-				}
-
-			}
+	window.addEventListener( 'resize', onWindowResize, false );
 
 
+
+function buildController( data ) {
+
+	let geometry, material;
+
+	switch ( data.targetRayMode ) {
+
+		case 'tracked-pointer':
+
+			geometry = new THREE.BufferGeometry();
+			geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( [ 0, 0, 0, 0, 0, - 1 ], 3 ) );
+			geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( [ 0.5, 0.5, 0.5, 0, 0, 0 ], 3 ) );
+
+			material = new THREE.LineBasicMaterial( { vertexColors: true, blending: THREE.AdditiveBlending } );
+
+			return new THREE.Line( geometry, material );
+
+		case 'gaze':
+
+			geometry = new THREE.RingGeometry( 0.02, 0.04, 32 ).translate( 0, 0, - 1 );
+			material = new THREE.MeshBasicMaterial( { opacity: 0.5, transparent: true } );
+			return new THREE.Mesh( geometry, material );
+
+	}
+
+}
+
+*/
 
 //SET PIXEL RATIO
 if(portrait.matches){
@@ -644,42 +730,69 @@ const touchControls = (deltaTime) =>{
 }
 
 //VR CONTROLS
+/*
 function vrControls( deltaTime ) {
-	const speedMultiplier = playerOnFloor ? 900 : 500;
-    const gravity = -700; // Ajusta la gravedad según tus necesidades
+// gives a bit of air control
+const speedDelta = deltaTime * ( playerOnFloor ? 25 : 8 );
+console.log()
+if ( rightStickPosition[3]>=-1 && rightStickPosition[3]<0) {
 
-    const movement = new THREE.Vector3();
+	playerVelocity.add( getForwardVector().multiplyScalar( speedDelta ) );
 
-    movement.add(getForwardVector().multiplyScalar(-rightStickPosition[3] * deltaTime * speedMultiplier));
-    movement.add(getSideVector().multiplyScalar(rightStickPosition[2] * deltaTime * speedMultiplier));
+	const speed = 2
+	const quaternion = dolly.quaternion.clone()
+	dolly.quaternion.copy(camera.quaternion)
+	dolly.translateZ(-deltaTime*speed)
+	dolly.position.y =0
+	dolly.quaternion.copy(quaternion)
 
-    movement.add(getForwardVector().multiplyScalar(-leftStickPosition[3] * deltaTime * speedMultiplier));
-    movement.add(getSideVector().multiplyScalar(leftStickPosition[2] * deltaTime * speedMultiplier));
 
-    // Aplica el movimiento a la velocidad del jugador
-    playerVelocity.copy(movement);
-
-	if (playerOnFloor) {
-        if (rightJumpButton[4].pressed) {
-            // Aplica una aceleración inicial hacia arriba
-            playerVelocity.y = 800;
-        } else {
-            playerVelocity.y = 0; // Detiene la velocidad vertical si no se presiona el botón de salto
-        }
-    } else {
-        // Aplica la gravedad para que el personaje caiga suavemente
-        playerVelocity.y += gravity * deltaTime;
-    }
-
-    // Establece el espacio de referencia solo una vez al final
-    const offsetPosition = camera.position.clone().add(new THREE.Vector3(0, -2.02, 0)).negate();
-    const offsetRotation = new THREE.Quaternion();
-    const transform = new XRRigidTransform(offsetPosition, offsetRotation);
-    const teleportSpaceOffset = baseReferenceSpace.getOffsetReferenceSpace(transform);
-    renderer.xr.setReferenceSpace(teleportSpaceOffset);
-	console.log(camera.position)
-	console.log(renderer.xr.getCamera().position)
 }
+/*
+if ( rightStickPosition[3]<=1 && rightStickPosition[3]>0) {
+
+	playerVelocity.add( getForwardVector().multiplyScalar( -speedDelta ) );
+	//console.log(camera.position)
+	//console.log(renderer.xr.getCamera().position)		
+}
+*/
+
+/*	
+const speedMultiplier = playerOnFloor ? 900 : 500;
+const gravity = -700; // Ajusta la gravedad según tus necesidades
+
+const movement = new THREE.Vector3();
+
+movement.add(getForwardVector().multiplyScalar(-rightStickPosition[3] * deltaTime * speedMultiplier));
+movement.add(getSideVector().multiplyScalar(rightStickPosition[2] * deltaTime * speedMultiplier));
+
+movement.add(getForwardVector().multiplyScalar(-leftStickPosition[3] * deltaTime * speedMultiplier));
+movement.add(getSideVector().multiplyScalar(leftStickPosition[2] * deltaTime * speedMultiplier));
+
+// Aplica el movimiento a la velocidad del jugador
+playerVelocity.copy(movement);
+
+if (playerOnFloor) {
+	if (rightJumpButton[4].pressed) {
+		// Aplica una aceleración inicial hacia arriba
+		playerVelocity.y = 10;
+	} 
+}
+
+// Establece el espacio de referencia solo una vez al final
+const offsetPosition = camera.position.add(new THREE.Vector3(0, -2.02, 0)).negate();
+const offsetRotation = new THREE.Quaternion();
+const transform = new XRRigidTransform(offsetPosition, offsetRotation);
+const teleportSpaceOffset = baseReferenceSpace.getOffsetReferenceSpace(transform);
+renderer.xr.setReferenceSpace(teleportSpaceOffset);
+//console.log(camera.position)
+//console.log(renderer.xr.getCamera().position)
+
+}
+	
+	
+*/
+
 
 
 
@@ -934,8 +1047,7 @@ for ( let i = 0; i < STEPS_PER_FRAME; i ++ ) {
 		touchControls(deltaTime)
 	}
 
-if(renderer.xr.isPresenting)vrControls(deltaTime)
-
+//if(renderer.xr.isPresenting)vrControls(deltaTime)
 
 if(model)updatePlayer( deltaTime );
 
@@ -952,53 +1064,100 @@ if(model)pickHelper.pick(touchStartPosition, scene, camera, deltaTime);
 
 }
 
-if(renderer.xr.isPresenting){
-	//console.log(renderer.xr.getSession())
-//renderer.xr.getCamera().position.copy(camera.position)
-}
-
+/*
 INTERSECTION = undefined;
 
-				if ( controller1.userData.isSelecting === true ) {
+if ( controller1.userData.isSelecting === true ) {
 
-					tempMatrix.identity().extractRotation( controller1.matrixWorld );
+	tempMatrix.identity().extractRotation( controller1.matrixWorld );
 
-					raycaster.ray.origin.setFromMatrixPosition( controller1.matrixWorld );
-					raycaster.ray.direction.set( 0, 0, - 1 ).applyMatrix4( tempMatrix );
-					const intersects = raycaster.intersectObjects( [ model.children[138] ] );
+	raycaster.ray.origin.setFromMatrixPosition( controller1.matrixWorld );
+	raycaster.ray.direction.set( 0, 0, - 1 ).applyMatrix4( tempMatrix );
+	const intersects = raycaster.intersectObjects( [ model.children[138] ] );
 
-					if ( intersects.length > 0 ) {
+	if ( intersects.length > 0 ) {
 
-						INTERSECTION = intersects[ 0 ].point;
+		INTERSECTION = intersects[ 0 ].point;
 
-					}
+	}
 
-				} else if ( controller2.userData.isSelecting === true ) {
+} else if ( controller2.userData.isSelecting === true ) {
 
-					tempMatrix.identity().extractRotation( controller2.matrixWorld );
+	tempMatrix.identity().extractRotation( controller2.matrixWorld );
 
-					raycaster.ray.origin.setFromMatrixPosition( controller2.matrixWorld );
-					raycaster.ray.direction.set( 0, 0, - 1 ).applyMatrix4( tempMatrix );
+	raycaster.ray.origin.setFromMatrixPosition( controller2.matrixWorld );
+	raycaster.ray.direction.set( 0, 0, - 1 ).applyMatrix4( tempMatrix );
 
-					const intersects = raycaster.intersectObjects( [  model.children[138] ] );
+	const intersects = raycaster.intersectObjects( [  model.children[138] ] );
 
-					if ( intersects.length > 0 ) {
+	if ( intersects.length > 0 ) {
 
-						INTERSECTION = intersects[ 0 ].point;
+		INTERSECTION = intersects[ 0 ].point;
 
-					}
+	}
 
-				}
+}
 
-				if ( INTERSECTION ) marker.position.copy( INTERSECTION );
+if ( INTERSECTION ) marker.position.copy( INTERSECTION );
+marker.position.add(new THREE.Vector3(0, 0.1, 0))
+marker.visible = INTERSECTION !== undefined;
 
-				marker.visible = INTERSECTION !== undefined;
 
+*/
 
 renderer.render( scene, camera );
+if(renderer.xr.isPresenting && motionControllers){
+	
+	Object.values(motionControllers).forEach((motionController) =>{
+		console.log(motionController)
+		motionController.updateFromGamepad()
+		updateMotionControllerModel(motionController);	
+		});
+		
+}
 
 //requestAnimationFrame( animate );
 
 }
+
 renderer.setAnimationLoop(animate)
+
+
+function updateMotionControllerModel(motionController) {
+console.log(scene)
+	// Update the 3D model to reflect the button, thumbstick, and touchpad state
+	//console.log(motionController)
+//	const motionControllerRoot = scene.getObjectByName('root');
+	console.log(motionControllerRoot)
+	//console.log(motionController)
+	//console.log(motionController.layoutDescription.rootNodeName)
+	Object.values(motionController.components).forEach((component) => {
+console.log(component)
+		component.visualResponses.forEach((visualResponse) => {
+		// Find the topmost node in the visualization
+		const valueNode = motionControllerRoot.getChildByName(visualResponse.valueNodeName);
+  
+		// Calculate the new properties based on the weight supplied
+		if (visualResponse.valueNodeProperty === 'visibility') {
+		  valueNode.visible = visualResponse.value;
+		} else if (visualResponse.valueNodeProperty === 'transform') {
+		  const minNode = motionControllerRoot.getObjectByName(visualResponse.minNodeName);
+		  const maxNode = motionControllerRoot.getObjectByName(visualResponse.maxNodeName);
+  
+		  THREE.Quaternion.slerp(
+			minNode.quaternion,
+			maxNode.quaternion,
+			valueNode.quaternion,
+			visualResponse.value
+		  );
+  
+		  valueNode.position.lerpVectors(
+			minNode.position,
+			maxNode.position,
+			visualResponse.value
+		  );
+		}
+	  });
+	});
+  }
 //animate();
