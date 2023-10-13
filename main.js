@@ -21,8 +21,9 @@ window.mobileCheck = function() {
 const loadManager = new LoadingManager();
 const imageLoader = new TextureLoader(loadManager);
 const gltfLoader = new GLTFLoader(loadManager);
+const controlLoader = new GLTFLoader(loadManager);
 
-let model, mixer, animations, joystickManager;
+let model, controlModel, mixer, animations, joystickManager;
 
 gltfLoader.load('./assets/blender_test.gltf', function(gltf) {
 	model = gltf.scene;
@@ -126,7 +127,7 @@ loadManager.onLoad = function() {
 		
 	} );
 	
-	console.log(model.children)
+	//console.log(model.children)
 	progressBarContainer.style.display = 'none';
 
 	
@@ -273,18 +274,21 @@ renderer.xr.addEventListener( 'sessionstart', () =>{
 
 function onInputSourcesChange(event) {
 	event.added.forEach((xrInputSource) => {
-		console.log(xrInputSource)
+		
 	  createMotionController(xrInputSource);
 	});
+	console.log(event)
   };
-
+  
   const uri = 'node_modules/@webxr-input-profiles/assets/dist/profiles';
   const motionControllers = {};
-  
+
   async function createMotionController(xrInputSource) {
+
 	const { profile, assetPath } = await fetchProfile(xrInputSource, uri);
 	const motionController = new MotionController(xrInputSource, profile, assetPath);
 	motionControllers[xrInputSource] = motionController;
+	
 	addMotionControllerToScene(motionController);
   }  
 
@@ -292,6 +296,7 @@ function onInputSourcesChange(event) {
   function processTriggerInput(trigger) {
 	if (trigger.state === Constants.ComponentState.PRESSED) {
 	  // Fire ray gun
+	  console.log("TRIGGERRRRRRRRRRRRRRRRRRRRRRRRR")
 	} else if (trigger.state === Constants.ComponentState.TOUCHED) {
 	  const chargeLevel = trigger.buttonValue;
 	  // Show ray gun charging up
@@ -310,12 +315,13 @@ function onInputSourcesChange(event) {
 
    function addMotionControllerToScene(motionController) {
 	
-	gltfLoader.load(motionController.assetUrl, function(gltf){
+	controlLoader.load(motionController.assetUrl, function(gltf){
 		console.log(gltf)
-		const model = gltf.scene
-		console.log(model)
-		addTouchPointDots(motionController, model);
-		scene.add(model);
+		controlModel = gltf.scene
+		controlModel.name = motionController.layoutDescription.rootNodeName
+		console.log(controlModel)
+		addTouchPointDots(motionController, controlModel);
+		scene.add(controlModel);
 	});
 	
 	//console.log(motionController.assetUrl)
@@ -350,6 +356,13 @@ renderer.xr.addEventListener('sessionend',()=>{
  let controllerGrip1, controllerGrip2;
 
  let marker, baseReferenceSpace, animationFrameRequestID;
+
+ const vrControllerGrip1 = renderer.xr.getControllerGrip(0);
+ const vrControllerGrip2 = renderer.xr.getControllerGrip(1);
+
+
+
+
 /*
  let INTERSECTION;
  const tempMatrix = new THREE.Matrix4();
@@ -1104,17 +1117,17 @@ marker.visible = INTERSECTION !== undefined;
 
 
 */
-
-renderer.render( scene, camera );
-if(renderer.xr.isPresenting && motionControllers){
+Object.values(motionControllers).forEach((motionController) =>{
+	motionController.updateFromGamepad()
+	updateMotionControllerModel(motionController);	
+	});
 	
-	Object.values(motionControllers).forEach((motionController) =>{
-		console.log(motionController)
-		motionController.updateFromGamepad()
-		updateMotionControllerModel(motionController);	
-		});
+renderer.render( scene, camera );
+
+
+	
 		
-}
+
 
 //requestAnimationFrame( animate );
 
@@ -1124,19 +1137,19 @@ renderer.setAnimationLoop(animate)
 
 
 function updateMotionControllerModel(motionController) {
-console.log(scene)
+
 	// Update the 3D model to reflect the button, thumbstick, and touchpad state
-	//console.log(motionController)
-//	const motionControllerRoot = scene.getObjectByName('root');
-	console.log(motionControllerRoot)
-	//console.log(motionController)
-	//console.log(motionController.layoutDescription.rootNodeName)
+	
+	const motionControllerRoot = scene.getObjectByName(motionController.layoutDescription.rootNodeName);
+
 	Object.values(motionController.components).forEach((component) => {
-console.log(component)
-		component.visualResponses.forEach((visualResponse) => {
+
+
+		Object.values(component.visualResponses).forEach((visualResponse) => {
 		// Find the topmost node in the visualization
-		const valueNode = motionControllerRoot.getChildByName(visualResponse.valueNodeName);
-  
+
+		if(motionControllerRoot){
+		const valueNode = motionControllerRoot.children[0].getObjectByName(visualResponse.valueNodeName)
 		// Calculate the new properties based on the weight supplied
 		if (visualResponse.valueNodeProperty === 'visibility') {
 		  valueNode.visible = visualResponse.value;
@@ -1144,7 +1157,7 @@ console.log(component)
 		  const minNode = motionControllerRoot.getObjectByName(visualResponse.minNodeName);
 		  const maxNode = motionControllerRoot.getObjectByName(visualResponse.maxNodeName);
   
-		  THREE.Quaternion.slerp(
+		  valueNode.quaternion.slerpQuaternions(
 			minNode.quaternion,
 			maxNode.quaternion,
 			valueNode.quaternion,
@@ -1157,7 +1170,11 @@ console.log(component)
 			visualResponse.value
 		  );
 		}
+		}
 	  });
+	  
 	});
+	
   }
-//animate();
+ 
+  
