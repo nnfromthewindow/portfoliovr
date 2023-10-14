@@ -360,7 +360,11 @@ renderer.xr.addEventListener('sessionend',()=>{
  const vrControllerGrip1 = renderer.xr.getControllerGrip(0);
  const vrControllerGrip2 = renderer.xr.getControllerGrip(1);
 
+vrControllerGrip1.addEventListener('connected', (xrInputSource)=>{
 
+	console.log(xrInputSource)
+	console.log(motionControllers)
+})
 
 
 /*
