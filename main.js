@@ -264,12 +264,22 @@ vrButton.addEventListener('touchstart', (e)=>{
 })
 
 let xrSession
+	const vrController1 = renderer.xr.getController(0);
+	const vrController2 = renderer.xr.getController(1);
 
+	vrController1.addEventListener( 'connected', function ( e ) {
+	console.log(e)
+
+	} );	
+   
 renderer.xr.addEventListener( 'sessionstart', () =>{ 
 	baseReferenceSpace = renderer.xr.getReferenceSpace() 
 	//animationFrameRequestID = renderer.xr.getFrame()
 	xrSession = renderer.xr.getSession()
 	xrSession.addEventListener('inputsourceschange', onInputSourcesChange);
+
+	console.log(motionControllers)
+
 });
 
 function onInputSourcesChange(event) {
@@ -277,7 +287,8 @@ function onInputSourcesChange(event) {
 		
 	  createMotionController(xrInputSource);
 	});
-	console.log(event)
+	
+
   };
   
   const uri = 'node_modules/@webxr-input-profiles/assets/dist/profiles';
@@ -357,14 +368,6 @@ renderer.xr.addEventListener('sessionend',()=>{
 
  let marker, baseReferenceSpace, animationFrameRequestID;
 
- const vrControllerGrip1 = renderer.xr.getControllerGrip(0);
- const vrControllerGrip2 = renderer.xr.getControllerGrip(1);
-
-vrControllerGrip1.addEventListener('connected', (xrInputSource)=>{
-
-	console.log(xrInputSource)
-	console.log(motionControllers)
-})
 
 
 /*
