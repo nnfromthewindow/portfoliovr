@@ -268,10 +268,13 @@ let xrSession
 	const vrController2 = renderer.xr.getController(1);
 
 	vrController1.addEventListener( 'connected', function ( e ) {
+	console.log(vrController1)
+	console.log(motionControllers)
 	console.log(e)
-
 	} );	
    
+//scene.add(vrController1)	
+//scene.add(vrController2)	
 renderer.xr.addEventListener( 'sessionstart', () =>{ 
 	baseReferenceSpace = renderer.xr.getReferenceSpace() 
 	//animationFrameRequestID = renderer.xr.getFrame()
@@ -294,20 +297,24 @@ function onInputSourcesChange(event) {
   const uri = 'node_modules/@webxr-input-profiles/assets/dist/profiles';
   const motionControllers = {};
 
-  async function createMotionController(xrInputSource) {
-
-	const { profile, assetPath } = await fetchProfile(xrInputSource, uri);
-	const motionController = new MotionController(xrInputSource, profile, assetPath);
-	motionControllers[xrInputSource] = motionController;
+  function createMotionController(xrInputSource) {
+	console.log(xrInputSource)
+	//const { profile, assetPath } = await fetchProfile(xrInputSource, uri);
+	fetchProfile(xrInputSource,uri).then(({profile,assetPath})=>{
+		const motionController = new MotionController(xrInputSource, profile, assetPath);
+		motionControllers[xrInputSource.handedness] = motionController;
 	
-	addMotionControllerToScene(motionController);
+		addMotionControllerToScene(motionController);
+	
+	})
+	
   }  
 
 
-  function processTriggerInput(trigger) {
+  function  processTriggerInput(trigger) {
 	if (trigger.state === Constants.ComponentState.PRESSED) {
 	  // Fire ray gun
-	  console.log("TRIGGERRRRRRRRRRRRRRRRRRRRRRRRR")
+	  console.log("FIREEEE")
 	} else if (trigger.state === Constants.ComponentState.TOUCHED) {
 	  const chargeLevel = trigger.buttonValue;
 	  // Show ray gun charging up
@@ -1125,6 +1132,8 @@ marker.visible = INTERSECTION !== undefined;
 
 */
 Object.values(motionControllers).forEach((motionController) =>{
+	
+	//processTriggerInput(motionController)
 	motionController.updateFromGamepad()
 	updateMotionControllerModel(motionController);	
 	});
@@ -1150,7 +1159,11 @@ function updateMotionControllerModel(motionController) {
 	const motionControllerRoot = scene.getObjectByName(motionController.layoutDescription.rootNodeName);
 
 	Object.values(motionController.components).forEach((component) => {
-
+if(component.type=='trigger'){
+	//console.log(component)
+	processTriggerInput(component.values)
+}
+		//processTriggerInput(component)
 
 		Object.values(component.visualResponses).forEach((visualResponse) => {
 		// Find the topmost node in the visualization
