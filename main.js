@@ -34,14 +34,14 @@ gltfLoader.load('./assets/blender_test.gltf', function(gltf) {
 	if(!window.mobileCheck()){
 		crosshair.style.display='block'
 		touchScreen.style.display='none'
-		initScreen.style.display='flex'
+		//initScreen.style.display='flex'
 		jump.style.display='none'
 		renderer.setPixelRatio( window.devicePixelRatio )
 	}
 	if(window.mobileCheck()){
 		crosshair.style.display='none'
 		touchScreen.style.display='flex'
-		initScreen.style.display='none'
+		//initScreen.style.display='none'
 		jump.style.display='flex'
 	}
 	
@@ -412,10 +412,16 @@ raycaster = new THREE.Raycaster();
 
 		if(nextVrButton.length > 0){
 			//console.log(model)
-			model.children[86].material.emissive.setHex(0x00FF00)
+			model.traverse((child)=>{
+				if(child.name == 'next_btn'){
+					console.log(child.material)
+					child.material.color.setHex(0x00FF00)
 			setTimeout(()=>{
-				model.children[86].material.emissive.setHex(0xFF0000)
+				child.material.color.setHex(0xFF0000)
 			},200)
+				}
+			})
+			
 		}
 			} 	
 		})
