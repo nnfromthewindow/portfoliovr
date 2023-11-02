@@ -123,7 +123,7 @@ loadManager.onLoad = function() {
 			child.visible = false
 		}
 
-	
+	vrButton.style.display='block'
 		
 	} );
 	
@@ -255,6 +255,7 @@ container.appendChild( renderer.domElement );
 
 //VR BUTTON
 const vrButton = document.getElementById('VRButton');
+
 
 vrButton.addEventListener('touchstart', (e)=>{
 	vrButton.click()
@@ -519,7 +520,7 @@ if(portrait.matches){
 }
 
 //PHYSICS VARIABLES
-const GRAVITY = 30;
+const GRAVITY = 20;
 const STEPS_PER_FRAME = 5;
 const worldOctree = new Octree();
 const playerVelocity = new THREE.Vector3();
@@ -713,7 +714,7 @@ jump.addEventListener('touchstart', (e)=>{
 
 	if ( playerOnFloor ) {
 
-			playerVelocity.y = 10;	
+			playerVelocity.y = 15;	
 
 	}
 })
@@ -721,7 +722,7 @@ jump.addEventListener('touchstart', (e)=>{
 const touchControls = (deltaTime) =>{
 
 				// gives a bit of air control
-				const speedDelta = deltaTime * ( playerOnFloor ? 25 : 8 );
+				const speedDelta = deltaTime * ( playerOnFloor ? 15 : 4 );
 
 				if ( touchPosition.y < 0 && touchPosition.y > -50 ) {
 
