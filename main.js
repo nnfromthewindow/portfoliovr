@@ -82,6 +82,8 @@ loadManager.onLoad = function() {
 				child.material.map.wrapS = THREE.RepeatWrapping;
 				child.material.map.wrapT = THREE.RepeatWrapping;
 				child.material.map.rotation = Math.PI/2
+				child.material.map.repeat.x = -1
+				console.log(child.material.map)
 				
 				};
 		}
@@ -145,9 +147,15 @@ loadManager.onLoad = function() {
 	})
 
 	materials = [
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/frente.jpg')}),
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/interior.jpg')}),
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/barra.jpg')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/encryptor.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/hangman.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/ecomerce.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/converter.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/hotel.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/tourism.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/videogames.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/portfolioapp.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/roomy.png')}),
 				
 	]
 
