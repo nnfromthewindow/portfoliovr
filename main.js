@@ -81,10 +81,7 @@ loadManager.onLoad = function() {
 				child.material.map = materials[0].map
 				child.material.map.wrapS = THREE.RepeatWrapping;
 				child.material.map.wrapT = THREE.RepeatWrapping;
-				child.material.map.rotation = Math.PI/2
-				child.material.map.repeat.x = -1
-				console.log(child.material.map)
-				
+				child.material.map.rotation = Math.PI/2				
 				};
 		}
 		//MODEL BOUNDARY
@@ -126,7 +123,7 @@ loadManager.onLoad = function() {
 		}
 
 	vrButton.style.display='block'
-		
+	
 	} );
 	
 	//console.log(model.children)
@@ -159,6 +156,9 @@ loadManager.onLoad = function() {
 				
 	]
 
+	materials.forEach((material)=>{
+	material.map.repeat.x =-1
+	})
 }
 
 //LOADING BAR
@@ -269,7 +269,7 @@ vrButton.addEventListener('touchstart', (e)=>{
 	vrButton.click()
 })
 
-let xrSession, marker, baseReferenceSpace, animationFrameRequestID, raycaster, controller1, controller2, controllerGrip1, controllerGrip2;
+let xrSession, marker, baseReferenceSpace, raycaster, controller1, controller2, controllerGrip1, controllerGrip2;
 let teleport=false
 
 renderer.xr.addEventListener( 'sessionstart', () =>{ 
@@ -1027,7 +1027,7 @@ function animate() {
 
 		raycaster.ray.origin.setFromMatrixPosition( controller1.matrixWorld );
 		raycaster.ray.direction.set( 0, 0, - 1 ).applyMatrix4( tempMatrix );
-		//console.log(model)
+
 		model.traverse((child)=>{
 			if(child.name == "ground"){
 				const intersects = raycaster.intersectObjects( [ child ] );
@@ -1064,12 +1064,11 @@ function animate() {
 	marker.visible = INTERSECTION !== undefined;
 
 	if(renderer.xr.isPresenting){
-		
+	
 	}
 
 	Object.values(motionControllers).forEach((motionController) =>{
 		
-		//processTriggerInput(motionController)
 		motionController.updateFromGamepad()
 		updateMotionControllerModel(motionController,deltaTime);	
 		});
