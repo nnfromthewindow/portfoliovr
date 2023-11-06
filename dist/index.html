@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		
+		
+		<title>Nicolas Nuccelli || Portfolio</title>
+		<script src="https://kit.fontawesome.com/49042185bb.js" crossorigin="anonymous"></script>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
+		
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+		<script type="module" crossorigin src="/assets/index-177423eb.js"></script>
+		<link rel="stylesheet" href="/assets/index-331faf9b.css">
+	</head>
+	<body>
+		<button id="pointerlock"></button>
+        <div id="container"></div>
+		<div id="menu">
+			<span id="crosshair"></span>
+			<div id="init-screen" >
+					<div class="keys">
+						<div class="up">
+							<div class="key"><h4 class="letter">W</h4></div>
+						</div>
+						<div class="down">
+							<div class="key"><h4 class="letter">A</h4></div>
+							<div class="key"><h4 class="letter">S</h4></div>
+							<div class="key"><h4 class="letter">D</h4></div>
+						</div>
+						<h2 class="menu-text">WASD TO MOVE</h2>
+					</div>
+					<div class="spacebar">
+						<div class="spacebar-key"><h4 class="letter">Spacebar</h4></div>
+						<h2 class="menu-text">JUMP</h2>
+					</div>
+					<div class="click">
+						<i class="fa-solid fa-computer-mouse"></i>
+						<h2 class="menu-text">LEFT CLICK</h2>
+						<h2 class="menu-text">SELECT</h2>
+					</div>
+					<div class="esc">
+						<div class="esc-key"><h4 class="letter">Esc</h4></div>
+						<h2 class="menu-text">EXIT</h2>
+					</div>
+			</div>
+			<div id="touch-screen">
+				<div class="joystick" id="zone_joystick"></div>
+				<div id="jump"></div>
+			</div>
+			<div class="progress-bar-container">
+				<div class="title">
+					<h1>Nicolas Nuccelli</h1>
+					<h2>Fullstack Developer</h2>
+				</div>
+				<label for="progress-bar">Loading...</label>
+				<progress id="progress-bar" value="0" max="100"></progress>
+			</div>
+		</div>
+		<div id="vr"></div>
+		
+		<script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script>
+		
+		
+	</body>
+</html>
