@@ -25,7 +25,7 @@ const controlLoader = new GLTFLoader(loadManager);
 
 let model, controlModel, mixer, animations, joystickManager;
 
-gltfLoader.load('./assets/blender_test.gltf', function(gltf) {
+gltfLoader.load('/blender_test.gltf', function(gltf) {
 	model = gltf.scene;
 
 	animations = gltf.animations
@@ -144,15 +144,15 @@ loadManager.onLoad = function() {
 	})
 
 	materials = [
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/encryptor.png')}),
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/hangman.png')}),
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/ecomerce.png')}),
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/converter.png')}),
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/hotel.png')}),
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/tourism.png')}),
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/videogames.png')}),
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/portfolioapp.png')}),
-		new THREE.MeshBasicMaterial({map: imageLoader.load('assets/roomy.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('/encryptor.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('/hangman.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('/ecomerce.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('/converter.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('/hotel.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('/tourism.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('/videogames.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('/portfolioapp.png')}),
+		new THREE.MeshBasicMaterial({map: imageLoader.load('/roomy.png')}),
 				
 	]
 
